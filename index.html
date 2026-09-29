@@ -1,0 +1,2166 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Examen Final — Ingeniería de Software I (SIS-0325) · UPDS 2026</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = {
+  theme: { extend: {
+    colors: { ios: { blue:'#007AFF', green:'#34C759', red:'#FF3B30', orange:'#FF9500',
+                     purple:'#AF52DE', teal:'#5AC8FA', bg:'#F2F2F7', sep:'#E5E5EA', second:'#6C6C70' } },
+    fontFamily: { sans:['-apple-system','BlinkMacSystemFont','Segoe UI','system-ui','sans-serif'] }
+  }}
+}
+</script>
+<style>
+*{-webkit-tap-highlight-color:transparent}
+body{-webkit-font-smoothing:antialiased;background:#F2F2F7}
+.card{background:#fff;border-radius:18px;box-shadow:0 2px 8px rgba(0,0,0,.07),0 0 1px rgba(0,0,0,.06)}
+.opt{border:2px solid #E5E5EA;border-radius:13px;transition:all .16s ease;cursor:pointer;user-select:none}
+.opt:hover{border-color:#C6C6C8;background:#FAFAFA}
+.opt.sel{border-color:#007AFF;background:#EBF5FF}
+.opt.ok{border-color:#34C759!important;background:#E8F8EE!important}
+.opt.fail{border-color:#FF3B30!important;background:#FFF0EE!important}
+.opt.missed{border-color:#FF9500!important;background:#FFF5E6!important}
+.opt:active{transform:scale(.98)}
+.tf{border:2px solid #E5E5EA;border-radius:13px;cursor:pointer;transition:all .16s ease;user-select:none;padding:12px;text-align:center;font-weight:600}
+.tf.sel-true{border-color:#34C759;background:#E8F8EE;color:#1A7A34}
+.tf.sel-false{border-color:#FF3B30;background:#FFF0EE;color:#C0392B}
+.tf.ok{border-color:#34C759;background:#E8F8EE}
+.tf.fail{border-color:#FF3B30;background:#FFF0EE}
+.tf:active{transform:scale(.98)}
+.chip{cursor:pointer;user-select:none;border:2px solid #007AFF;color:#007AFF;background:#EBF5FF;border-radius:10px;padding:5px 14px;font-weight:600;font-size:.875rem;transition:all .15s ease;display:inline-block}
+.chip:hover{background:#D6EBFF}
+.chip.active{background:#007AFF;color:#fff;transform:scale(1.05);box-shadow:0 4px 12px rgba(0,122,255,.3)}
+.chip.used{opacity:.3;pointer-events:none}
+.blank{display:inline-flex;align-items:center;justify-content:center;min-width:148px;height:36px;border:2px dashed #C6C6C8;border-radius:10px;background:#F9F9FB;color:#6C6C70;font-size:.875rem;font-weight:600;cursor:pointer;vertical-align:middle;margin:0 3px;transition:all .15s ease}
+.blank:hover{border-color:#007AFF;background:#EBF5FF;color:#007AFF}
+.blank.ready{border-color:#007AFF;background:#EBF5FF;color:#0055CC;border-style:solid}
+.blank.ok{border-color:#34C759;background:#E8F8EE;color:#1A7A34;border-style:solid}
+.blank.fail{border-color:#FF3B30;background:#FFF0EE;color:#C0392B;border-style:solid}
+.stab{border-radius:10px;padding:7px 14px;font-size:.78rem;font-weight:600;cursor:pointer;transition:all .15s ease;border:2px solid transparent;white-space:nowrap}
+.stab.active{color:#fff}
+.progress-track{background:#E5E5EA;border-radius:99px;height:6px}
+.progress-fill{background:#007AFF;border-radius:99px;height:6px;transition:width .5s cubic-bezier(.34,1.56,.64,1)}
+.section-in{animation:sIn .3s ease}
+@keyframes sIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.score-ring{animation:pulse 2.4s ease-in-out infinite}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.04)}}
+.cb-box{width:20px;height:20px;border:2px solid #C6C6C8;border-radius:5px;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .15s ease}
+.cb-box.checked{background:#007AFF;border-color:#007AFF}
+.cb-box.ok-check{background:#34C759;border-color:#34C759}
+.cb-box.fail-check{background:#FF3B30;border-color:#FF3B30}
+.cb-box.missed-check{background:#FF9500;border-color:#FF9500}
+input[type=text],input[type=email],input[type=number],input[type=datetime-local]{outline:none;transition:border-color .15s ease}
+input[type=text]:focus,input[type=email]:focus,input[type=number]:focus,input[type=datetime-local]:focus{border-color:#007AFF}
+.insights-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px}
+.insight-card{border-radius:10px;padding:12px;font-size:.85rem;line-height:1.5;border-left:4px solid;background:#f9f9fb}
+.insight-card.high{border-left-color:#FF3B30;background:#FFF0EE}
+.insight-card.high .ic-title{color:#C0392B;font-weight:700}
+.insight-card.high .ic-text{color:#6D2826;font-size:.8rem}
+.insight-card.medium{border-left-color:#FF9500;background:#FFF5E6}
+.insight-card.medium .ic-title{color:#C67000;font-weight:700}
+.insight-card.medium .ic-text{color:#6B3F00;font-size:.8rem}
+.insight-card.low{border-left-color:#34C759;background:#E8F8EE}
+.insight-card.low .ic-title{color:#1A7A34;font-weight:700}
+.insight-card.low .ic-text{color:#0D5722;font-size:.8rem}
+@media print{
+  body{background:#fff!important}
+  #app-shell,#intake-screen,#results-overlay,header,.sticky,.fixed,#bottom-nav{display:none!important}
+  #print-report{display:block!important}
+  .pr-section{page-break-before:auto}
+  .pr-q{page-break-inside:avoid;border:1px solid #e5e5ea;border-radius:10px;padding:12px;margin-bottom:10px}
+  .pr-opt{padding:5px 10px;border-radius:6px;margin-bottom:4px;font-size:.85rem}
+  .pr-ok{background:#E8F8EE;color:#1A7A34}
+  .pr-fail{background:#FFF0EE;color:#C0392B}
+  .pr-missed{background:#FFF5E6;color:#c07000}
+  .pr-neutral{color:#555}
+  .pr-just{background:#F5F5F5;border-radius:8px;padding:8px;font-size:.82rem;color:#444;margin-top:8px}
+}
+#print-report{display:none}
+</style>
+</head>
+<body class="min-h-screen">
+
+<div id="intake-screen" class="min-h-screen flex items-start justify-center py-10 px-4">
+  <div style="max-width:540px;width:100%">
+    <div class="text-center mb-6">
+      <div class="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-white mb-3 shadow-lg shadow-blue-200 p-2 border border-ios-sep">
+        <img id="intake-logo" alt="Logo UPDS" class="w-full h-full object-contain"/>
+      </div>
+      <h1 class="text-2xl font-bold text-gray-900">Examen Final</h1>
+      <p class="text-ios-second text-sm mt-1">Ingeniería de Software I (SIS-0325) · UPDS 2026</p>
+    </div>
+
+    <div class="card p-5 mb-4">
+      <div class="grid grid-cols-3 gap-3 text-center">
+        <div class="bg-blue-50 rounded-xl p-3">
+          <p class="text-xl font-bold text-ios-blue">32</p>
+          <p class="text-xs text-ios-second mt-0.5">preguntas</p>
+        </div>
+        <div class="bg-orange-50 rounded-xl p-3">
+          <p class="text-xl font-bold text-orange-500">90</p>
+          <p class="text-xs text-ios-second mt-0.5">minutos</p>
+        </div>
+        <div class="bg-green-50 rounded-xl p-3">
+          <p class="text-xl font-bold text-ios-green">4</p>
+          <p class="text-xs text-ios-second mt-0.5">bloques</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="card p-5 mb-4">
+      <h2 class="font-bold text-gray-800 mb-4">Datos del estudiante</h2>
+      <div class="space-y-3">
+        <div>
+          <label class="text-xs font-semibold text-ios-second uppercase tracking-wide block mb-1">Nombre completo *</label>
+          <input id="inp-nombre" type="text" placeholder="Ej. Ana Sofía Torres Vidal"
+            class="w-full border-2 border-ios-sep rounded-xl px-4 py-3 text-sm text-gray-800"
+            oninput="checkIntake()" onchange="checkIntake()"/>
+        </div>
+        <div>
+          <label class="text-xs font-semibold text-ios-second uppercase tracking-wide block mb-1">Código de estudiante *</label>
+          <input id="inp-codigo" type="text" placeholder="Ej. 2023-SIS-0042"
+            class="w-full border-2 border-ios-sep rounded-xl px-4 py-3 text-sm text-gray-800"
+            oninput="checkIntake()" onchange="checkIntake()"/>
+        </div>
+        <div>
+          <label class="text-xs font-semibold text-ios-second uppercase tracking-wide block mb-1">Correo institucional *</label>
+          <input id="inp-email" type="email" placeholder="codigo@upds.edu.bo"
+            class="w-full border-2 border-ios-sep rounded-xl px-4 py-3 text-sm text-gray-800"
+            oninput="checkIntake()" onchange="checkIntake()"/>
+          <div id="lock-banner" style="display:none" class="mt-2 rounded-xl px-3 py-2.5 text-xs leading-relaxed"></div>
+        </div>
+        <div>
+          <label class="text-xs font-semibold text-ios-second uppercase tracking-wide block mb-1">Fecha y hora de inicio</label>
+          <input id="inp-fecha" type="datetime-local"
+            class="w-full border-2 border-ios-sep rounded-xl px-4 py-3 text-sm text-gray-800 bg-white cursor-text"
+            oninput="checkIntake()" onchange="checkIntake()"/>
+        </div>
+      </div>
+    </div>
+
+    <div class="card p-5 mb-5">
+      <h2 class="font-bold text-gray-800 mb-3">Declaración de Honestidad</h2>
+      <div class="bg-blue-50 border border-blue-200 rounded-xl p-4 mb-4 text-xs text-blue-800 leading-relaxed">
+        <p class="font-bold mb-1">Examen Final — Ingeniería de Software I (SIS-0325)</p>
+        <p>Este es el <strong>Examen Final</strong> de la materia Ingeniería de Software I y evalúa: los cuatro bloques del curso y la bibliografía complementaria (fundamentos de ingeniería de software, SDLC y modelos de proceso según Pressman, gobernanza AI-DLC, Scrum según la Guía SBOK, historias de usuario, ingeniería de requerimientos, modelado UML, gestión de riesgos y gobernanza de la entrega). <strong>Responde con honestidad</strong>, sin apoyo externo, para reflejar fielmente tu nivel real de dominio del contenido.</p>
+      </div>
+      <div class="bg-red-50 border-2 border-red-300 rounded-xl p-4 mb-4">
+        <p class="font-bold text-red-800 text-xs mb-1.5 flex items-center gap-1.5"><span class="text-base">&#128274;</span> Un solo intento por correo</p>
+        <p class="text-xs text-red-700 leading-relaxed">Este examen se puede rendir <strong>una única vez por correo institucional</strong>. En cuanto entregues, tu resultado queda registrado en este navegador como <strong>nota final</strong> y no podrás volver a rendirlo con el mismo correo: al reabrir el examen se te mostrará directamente esa nota, sin opción de repetirlo.</p>
+      </div>
+      <div class="bg-orange-50 border-2 border-orange-300 rounded-xl p-4 mb-4">
+        <p class="font-bold text-orange-800 text-xs mb-1.5 flex items-center gap-1.5"><span class="text-base">&#128196;</span> La entrega debe ser en PDF</p>
+        <p class="text-xs text-orange-700 leading-relaxed">Al terminar, descarga el reporte y <strong>súbelo a Moodle en formato PDF</strong> (usando "Guardar como PDF" en el cuadro de impresión). El reporte llevará tu <strong>código de verificación único</strong>. Cualquier entrega que no sea el PDF con ese código <strong>no será calificada</strong>.</p>
+      </div>
+      <label class="flex items-start gap-3 cursor-pointer group">
+        <input id="inp-consent" type="checkbox" onchange="toggleConsent(this.checked)" onclick="checkIntake()"
+          class="mt-0.5 w-5 h-5 flex-shrink-0 cursor-pointer"
+          style="accent-color:#007AFF"/>
+        <p class="text-sm text-gray-700 leading-relaxed">
+          Declaro que las respuestas que proporcione en este examen son <strong>completamente propias</strong>, basadas exclusivamente en mis conocimientos y sin apoyo externo, para que el resultado refleje fielmente mi nivel real de dominio de la materia. Entiendo que este es mi <strong>único intento</strong> con este correo y que debo entregar el reporte en <strong>formato PDF</strong> para ser calificado.
+        </p>
+      </label>
+    </div>
+
+    <button id="btn-start" onclick="handleStartClick()" disabled
+      class="w-full py-4 rounded-2xl font-bold text-base bg-gray-200 text-gray-400 transition-all cursor-not-allowed">
+      Completar todos los campos para continuar
+    </button>
+
+    <p class="text-center text-xs text-ios-second mt-4 pb-6">
+      SIS-0325 · Ingeniería de Software I · Turno noche · UPDS 2026 · Docente: Ing. M.Sc. Jimmy Nataniel Requena Llorentty
+    </p>
+  </div>
+</div>
+
+<div id="app-shell" style="display:none">
+  <header class="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-ios-sep">
+    <div class="max-w-2xl mx-auto px-4 py-3 flex items-center justify-between gap-3">
+      <img id="hd-logo" alt="Logo UPDS" class="w-9 h-9 rounded-lg object-contain flex-shrink-0 border border-ios-sep bg-white p-0.5"/>
+      <div class="flex-1 min-w-0">
+        <p class="text-xs text-ios-second font-medium" id="hd-student">—</p>
+        <h1 class="text-sm font-bold text-gray-900 truncate">Examen Final — Ingeniería de Software I</h1>
+      </div>
+      <div class="text-right shrink-0">
+        <p class="text-xs text-ios-second">Tiempo</p>
+        <p id="timer" class="text-lg font-bold text-gray-800 tabular-nums">90:00</p>
+      </div>
+    </div>
+    <div class="max-w-2xl mx-auto px-4 pb-3">
+      <div class="flex justify-between text-xs text-ios-second mb-1">
+        <span id="prog-label">Bloque 1 de 4</span>
+        <span id="prog-pct">0 / 32</span>
+      </div>
+      <div class="progress-track"><div class="progress-fill" id="progress-bar" style="width:0%"></div></div>
+    </div>
+  </header>
+
+  <div class="sticky top-[92px] z-40 bg-ios-bg/95 backdrop-blur-sm py-2 border-b border-ios-sep">
+    <div class="max-w-2xl mx-auto px-3 flex gap-2 overflow-x-auto pb-0.5" style="scrollbar-width:none">
+      <button class="stab" id="tab-0" onclick="goSection(0)">— 1</button>
+      <button class="stab" id="tab-1" onclick="goSection(1)">— 2</button>
+      <button class="stab" id="tab-2" onclick="goSection(2)">— 3</button>
+      <button class="stab" id="tab-3" onclick="goSection(3)">— 4</button>
+    </div>
+  </div>
+
+  <main class="max-w-2xl mx-auto px-4 py-5 pb-32" id="main-content"></main>
+
+  <div id="bottom-nav" class="fixed bottom-0 inset-x-0 bg-white/90 backdrop-blur-md border-t border-ios-sep z-50">
+    <div class="max-w-2xl mx-auto px-4 py-3 flex gap-3">
+      <button id="btn-prev" onclick="prevSection()" class="flex-1 py-3 rounded-2xl font-semibold text-sm border-2 border-ios-sep text-ios-second hover:bg-gray-50 transition-all">← Anterior</button>
+      <button id="btn-next" onclick="nextSection()" class="flex-1 py-3 rounded-2xl font-semibold text-sm bg-ios-blue text-white hover:bg-blue-600 transition-all active:scale-95 shadow-md shadow-blue-200">Siguiente →</button>
+      <button id="btn-submit" onclick="confirmSubmit()" style="display:none" class="flex-1 py-3 rounded-2xl font-semibold text-sm bg-ios-green text-white hover:bg-green-600 transition-all active:scale-95 shadow-md shadow-green-200">Entregar Actividad</button>
+    </div>
+  </div>
+</div>
+
+<div id="results-overlay" style="display:none" class="fixed inset-0 z-[100] bg-ios-bg overflow-y-auto">
+  <div class="max-w-2xl mx-auto px-4 py-8">
+
+    <div id="annul-banner" style="display:none" class="card p-5 border-2 border-red-400 bg-red-50 mb-4"></div>
+
+    <div class="card p-7 text-center mb-4">
+      <p class="text-xs font-semibold tracking-widest text-ios-second uppercase mb-3">Resultado del Examen Final</p>
+      <div class="score-ring w-36 h-36 rounded-full mx-auto mb-4 flex flex-col items-center justify-center border-8" id="score-ring">
+        <span class="text-4xl font-bold" id="score-num">--</span>
+        <span class="text-sm text-ios-second">/32</span>
+      </div>
+      <p class="text-2xl font-bold mb-1" id="score-label">--</p>
+      <p class="text-ios-second text-sm mb-3" id="score-sub">--</p>
+      <div class="bg-gray-50 rounded-xl p-3 grid grid-cols-3 gap-2 text-sm">
+        <div><p class="text-xs text-ios-second">Estudiante</p><p class="font-semibold text-gray-800 truncate" id="res-nombre">--</p></div>
+        <div><p class="text-xs text-ios-second">Código</p><p class="font-semibold text-gray-800" id="res-codigo">--</p></div>
+        <div><p class="text-xs text-ios-second">Nivel</p><p class="font-semibold" id="res-grade">--</p></div>
+      </div>
+      <div class="mt-3 bg-blue-50 border border-blue-200 rounded-xl p-3">
+        <p class="text-xs text-ios-second">Código de verificación (debe coincidir con el PDF entregado)</p>
+        <p class="font-bold text-ios-blue tracking-wide text-sm" id="res-veriCode">--</p>
+      </div>
+    </div>
+
+    <div class="card p-5 mb-4">
+      <h2 class="font-bold text-gray-800 mb-3">Resultado por sección</h2>
+      <div id="breakdown" class="space-y-3"></div>
+    </div>
+
+    <div class="card p-5 mb-4">
+      <h2 class="font-bold text-gray-800 mb-3">Análisis de Resultados por Tema</h2>
+      <p class="text-xs text-ios-second mb-4">Basado en tus respuestas, estas son las áreas con mayor y menor dominio en esta evaluación:</p>
+      <div id="insights-container" class="insights-grid"></div>
+      <div class="mt-4 p-3 bg-blue-50 rounded-lg text-xs text-blue-700">
+        <p class="font-semibold mb-1">Retroalimentación completa disponible:</p>
+        <p>Descarga el PDF para ver cada pregunta con tu respuesta, la respuesta correcta y la justificación detallada de todas las opciones.</p>
+      </div>
+    </div>
+
+    <div class="card p-5 border-2 border-red-300 bg-red-50 mb-4">
+      <p class="font-bold text-red-800 text-sm mb-2 flex items-center gap-1.5"><span class="text-lg">&#128196;</span> Solo se califica el PDF con tu código</p>
+      <ol class="text-xs text-red-700 leading-relaxed list-decimal pl-4 space-y-1">
+        <li>Toca el botón azul de abajo. Se abrirá el cuadro de impresión del navegador.</li>
+        <li>En "Destino", elige <strong>Guardar como PDF</strong> (no imprimas en papel).</li>
+        <li>Sube ese archivo PDF, tal cual, a la tarea correspondiente en Moodle.</li>
+      </ol>
+      <p class="text-xs text-red-800 font-bold mt-2">Cualquier otro formato (captura de pantalla, Word, HTML) o un PDF sin tu código de verificación NO será calificado.</p>
+    </div>
+
+    <button onclick="downloadPDF()" class="w-full py-4 rounded-2xl bg-ios-blue text-white font-bold text-sm mb-4 hover:bg-blue-600 transition-all active:scale-95 shadow-md shadow-blue-200">
+      Descargar Retroalimentación Completa (PDF)
+    </button>
+
+    <div class="card p-5 border-2 border-green-300 bg-green-50 mb-4">
+      <div class="flex gap-3 items-start">
+        <span class="text-2xl flex-shrink-0">&#10003;</span>
+        <div>
+          <p class="font-bold text-green-800 text-sm mb-2">Evaluación entregada correctamente</p>
+          <p class="text-xs text-green-700 leading-relaxed">
+            Tu Examen Final de Ingeniería de Software I ha sido completado y quedó registrado con tu correo: este es tu <strong>único intento</strong> y esta nota es definitiva. Descarga la retroalimentación completa para revisar cada pregunta, tu respuesta y la justificación de la respuesta correcta y por que las otras opciones son incorrectas.
+          </p>
+          <p class="text-xs text-green-600 font-semibold mt-2">
+            Sube el PDF descargado a Moodle antes del plazo establecido; sin ese PDF, la evaluación no se califica.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <p class="text-center text-xs text-ios-second pb-4">
+      SIS-0325 · Ingeniería de Software I · Turno noche · UPDS 2026 · Docente: Ing. M.Sc. Jimmy Nataniel Requena Llorentty
+    </p>
+  </div>
+</div>
+
+<script>
+const LOGO_DATA_URI = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAJYAAACWCAMAAAAL34HQAAAC+lBMVEUAAADkBCHkBSHlCiPmHyo4YpMVP4rlByLlByIYQIrlCSQiSJAZRY4YQYsaP4oyTZMIbKzmFycYQIvlCiMUQYsURI4SQYvlDSUQQozlCyTkByIgR4/lDyQGbq4UVpvmGisPRI4ZQItSaKPmHCkPQowfP4oWQIrlEicQQ40PQowZPokWRY/lDSTmFyeLmsIORI0xUZUMWJ0MW5/lDyQik1blDiMXPonlEyblDSMaPYgdR48PSZLmEyYcPYkiP4oXj0/mGyrlEiYSSJA3nmboKT4HV5xQq3sSRI0MSpIKXqENTZQOWp7lDCMJZ6hrfrANikgQT5Zxg7QJiERruI9hs4fqOVCtuNQGXaA3VpjmFCv8+flJYp8KZaczUJQMVpt4vplWbaVGXZwLUJYNikhXroBFXZwQUJflCiPuX3F1vZfrR1z72t4GU5gqR49yhLRjd6wPU5koU5c0aKUHba0dO4dDpHF7v5t3ibdFpXKGt6tpfK8Xj09rkaZrqJnzhpTxd4ZSrHwEaKkHUpdltYsdR49pfK9UaqMKZaeElL4LYaRJaKTwbn6Flb7tVGhoe69pto7wcoPrR1xRrHvtUmZVrn8nl1yPncNxu5Q2nmfvZnhMZKDygY+WpMcQYKP///////9leq6YzrFZbqff8OiCw6B6i7joITseklUudK3S1+e6w9ocklPF49P///////8eO4cAhD4PQozlFSbkDCMHh0MjP4oKRY3mIivkBCEAcbAHR48nQ4wAWp4DTpUAZ6cESJAMikflCiPmHSpDX54sSI/lDSkRjEs4V5kklllGZ6TT6t63wNlyhLQEYaMbQ44cPooYPom53sqap8kVT5g5oGrw8/bm6fIDVZoTXaFAWZkYSJMcklTc4e3d7+XF49OWzLBGpnPoIzzByd6TocZ+j7qg0beKx6dYr4Ho9O7M0uQvm2LU2uis18FidqtbcKhpfK8PZ6mFxKP4t7+Flb5/wZ6kr871nKj95un6y9HvZXfmGDItfrVRebDuWm2WMbQNAAAAr3RSTlMAsD1KuwfeNCJlDw8gljn+vNl5GaBJswfVVUQpzP7+xooZ/vPvwauLcveGMvS//uTVzYx7DuTKm3BXQsawjnH+6ahQOBTe1bukopV27eOmlIA4IP7+/v3y6mL858G6rqygmYlsamJbLiz+/fv3tJGAZv768O3s5dfCV1NTIxj+/f336+rZ1s3KvrH14N/Vx8fAtaaZj42Kh3xKPuznnTQc9PLw3oFpSOLe2Ma3mJB5WTS29wAADyRJREFUeNrs2VloE0EYB/APJXhEDSgiIlQNqKAQFAqiolHUKD5Ek9SildpqW7EVLYpt1XqBB+J933jf185DCsGAJCQmMYlCYlqNaZvU5tDYw9rWW3B2d7YbRaK0rpsHfy/tw8fMl5ndYf4J/Pfff50x/fBFj+fi4emQUo5GnTU1r169Ch6FFJLjizR4amudNc5gDqSM9Q6TwxHf2tLg8QQz1kOqWIccCCFTIBQNtunWQYpIVyrjiGGLZcSU6ZAatHgLEaEMmLSQGqbbkJ6DTLZUOSTSfQjpTQw9Qr5U2URQIUxvwmuFqSBV5OtRB0c+pIzbiBNLmfMBS1+ntOEVs4WiB1LmyWKcUG2N1raVnoBUo71zWQsiGjIlN7d/P/gj/frn5k4ZAsLTlLmqKisrX5dtgN/asPclXfuyTAMCu3rh5es31dVVVVXeVfAbq9yktlpxFQS1Xt7cqvC66OlciuM/vY4/vYTH/eGO2vB6ENIOym+U+S3N7a6Xme0XNvEtnVS1RCItqpN8a5suMbWP3Li23bsDBDTRarRTFFVhtbu9CoW8GIj8bR76ylxZWbstH4hiyipjav1hb6vCMhGEM5qSyyiWxe32ZwMrJ+Tx1DqZ27yzLQdY2VQjRcjdbtlkEM5KSl5BEUZZeCzpKlAYDLKXeaezQUf6GmuUUxyrVb4ShJONN4VDUd5F7GsQR76AI+6L0Xf52kgkxD7ei3ApX9uaDcJZQq8SC0/l3kmuNbY4QnpbwBGKRiLRaEwFtJ34IyTULgHhFFRQZDL6H5kaMG0AOWyIYQpktOkKMwJawNRUYq28AIQjXUQlsGsAy0OODNTBF8sIoTzANHYqwSIpCAgvV4fmXKDNRY4Y4tkccTSX23FOhbsABLXEShrz1++XkLYSAgbNZ2Lbkuw0cgeEVw0CK5ZbLBZ3c329WgKkLTZgdLRmC8wFhkSNa+VufPKuAsFtXLXDlVWm1gCRpyd9cdFH78gDQqPe8bqybNVG+CfOnwOe1ocQ1xjZRS3wzp0DcaxDP0mNlDFdiRIFtk4H4XU7cvBI90GQzEkT4oXaTkJS3fGA3aBrlu/5+OFD1oczpyCZow6lHtH0vmDbUUjm1Bl6wBV7lnepq6L37959XLFixebkfeWrfKFQS6Qw0rItP3lX89kBP57pSl/7DHV187/hkd7vSb6PkisHSmuySg9ckUAyg/aZ8YCf6AH3QafN+PzZbDCYP3/bvKVoMBAbc89mZp7NPQ0/u3cXfnZajWv35m4Eoru5zmAwPKz7tHnL/AHQWT0MRQZGXVHdeC7OeN9U0ykrUy2B35Co26urcC0fkkaZ53MDfu7R+bfQ8NBMw+NsmQaMXc04yrzGnVW59kp+01VZmI49uLa6fRcwpvEDfuvWhdUyPGSYDXWj2JAlkzc1uhX0dK76XZDUropGXFtP12a2HmdXix+wqPOr1Zt+Esx4EDzaNcCkuykLnXss4UxXu7dJAzxteV5euRZ4Gj/lxxd+u7w10+X1XpICdu2hgWmM3sYZ0GmHDMRn9sUpoGQyNjM8UoRb5UsSTohgjbOmNqjKT7hg+61sbROu9RcAbaiBqDsEnTdjqNmAmYu2sMdMX6oRT0Uma5aN4JKqqoWNY5Wvoge4TDvC2EwRssZmY1/2IJzKDPjw254Z0AUzDs2f/+nT5oPLuUBmp3MM4V1AjoxtMTrzMEnRGSklx8GCH2rdJJAtxwNuwQPOgK4ZMHjFwp6JgQxHBhalYAOZpBTpdLrCKBsUG1pKgQQyysjXhrOB6Lkwa+EA+KuWMGHGSuJM036gnbChuEkZcPhiwYYGTzAYOgG0/XR4s3K1jUIGstMyJjBgzN9ioJUgZRyxQVEXDba0ZZQArbgisVZ2GgS0k+IZ2ZA13WTy6RHL5CvU6WLs7xjSBRRPthOENMTKzxQuADYnxhNyojIUi7M5EQqMFMfiHgKC2rDAWsE2VV/MJR+bD+edDvqQniSfYjtb61coNoDANPubmhSu+vq9eCY+J/IQjv5zuc+wo6nJi2t3aUB4fXrdykr49vhYQh5j+jI5jiV8K30zq1cfEEG5DWEmm81GEpk+Xg7iSy9BDGalGCUSSAGH9egHysMgptGTyXJdR4m2lqSDmKRr+5P86tDzSxXN4NLrvO0gislr+5G+SgIB5oc7X2FkG9fV8LTVIArpgo4LV87WUMzjjLYV5mwCYnHaAhBHX8sYINLLj13OOlaezvectjobxDHBMhJ4589Dgtlp9l4gkkdrJfBr855bR4BYFlFT4JeGPbePlYJYslf/ekn6pqXt7geimfPl/pBfd/W1L4hn4Jdnk4bDj8YMm5WWZhkLYrrx9vHMpVLgTRi7Zs3zp0a8hWJa9uXBg3F9pnAPvmTkI/uLp08oay8Q13f265hFjSCKA/hrPJBbXRC1ORQUVogWWVMIKlpcc+RCIN3dJ7jqhCh+gkMI5DvkM/yxiBBXuWIDy0CcXViImyXdpZVsH4vMGm49Nulnivy63erPm8ebNx9+vcvPLAz+pDIY34cupl2S7WXPdOqAEZ9aw3ZtDpz0SL4W2+0gGIOmDu4CRo0U0GVIuC4+mqQEjSHBAWdEajDtJ8UCK5AaSsyCbcWpOAd0Jd4Xsa45zXUA8JADkD8cEhlqxsUKfQANUkjBgkhVDYETUsiZzblfDQIXUGJsPcrtQxErCoBzUom5rwabqMKRJaUUJ1FU+eRjSIq58H2/iiap4TQ7aFz0hVDg6JAKsoYO8EO/R5HvA9BIurzJdMAN/UO/V+JUCvR8/r0NwXV5KIaW70JQoOdNVkeaIz1WSX/YwSgYls2Y49jMgmBLv6yb377WIVJow0FxNCp2ELNPSbLGz+/6k1YqQ/gsf2s2fjwABXo0hcAGJJvxxYGbzIMaYkz+c6xjAXormRaHM7wm6Tqe5x1jaK74VOAMyfC88bHDM3EsR4Grpyyqk6PEjHvebCh/Oy3O506XEqXr8Xw+f1YkyZqLxThDRzVzshDKJFd2uZylVvpJdblcZEmqs/v7dGXOJ0H8U6qb9bpPKbV2sH5OMuXvtttbjdIut9sCyXNzt1pt+xlKO71dibCy9FabVfst/e1ys7nKkCzaizct+pf21etX9N9v9shY5VEgisIn44AynViIIshiYaOVhKSwiJDSF8gT5P3mFrd2nmzPGPf/U2yzsMWy5IPkTK73nMicDx/+mMRkKIxxZc2DM3XJSZFFhTHPzOzgpQVQJFWVlHTUDvUxQzwBr6UUkcPgvoyMP1L5P/GrBsO+DE/D6TubXFGJZG6TszOyOU7STGRCukmdiGzb1mBXWd19lfMgI1LZMpyFDMy/Up/gUuQEshtEvoyFe6VeYTYxSDbZKsAI4RLQCEPf8Z6v5X3mvPeL8d5xkqLxJ/T+jIRPsqyg5pi8T2quX8cTUs6R++V69jMw+sFfwKX1cYoPCI3lxQ/UM67eV+6VOu+pWGhYAOOHx+K9QcrfQ4E3gvK1VDMXNGivwXGSYtKubPWCRDXP8556W3Ltinun2o0JUg18LZ1w0RxFp1HiErKgCRDPoW/0Ru2WhkYXU3u9lQ1TyxsNXQmjHcpOK6bYXPvflijSyCDiIJLCDTJJvG1Om6ankiEBngurW8tUJJY4oZc8fgqRiktn0F0DOAzXQyu4mHpnKpWln8uVZiMDsEoSky4s842V1997f3e86dz/KhGzX32zdwFCzdn0jHqcYyfPo8QJrW+pkXkv7EH3UWJlSsQZjzPcPj/tqTRF2lgiPz6hKWLwjdWQqzZwIVSm+1UiqqDa712wxJaaY9aQ1iHYlvd/lNjRMKUhtGPOIZdvgYtHiYfeotG4PfWhyuKLoM3YaCgMDao3N+ttHDu2+01hO+3aJ1w71phs69BaBmC2YwHUNsKLsAuy0fbomdNUeNq2wMxHy4SHtSx3tHViySUDobHdlTNk1k7ulWrteEdlxxL31lZmN6Rla69Az80P/xWnfwh8+Dv8+NmOFau4DQTR10ggJAshJCMQB2dwhB0XxlcYziGN4PDZJuAujXGR4qorDvIFl+bwR+Qj1CzcImm/4CDd/U7erOI4Jk3KFPfAM7Nv3j6Pl3WzgYN/hx8McIQzGJxtJRH4+Cf8LXQt5j1rv1iOq+pHFksptAcUkoHYdd8DPdd9ByBx3Y9Mk/5QnkOWExDX8zHruYcjUiGqrCNimvSZ550B+sziJt3c2rgfz35TJRB6QGsaWRRAKDkBppKBUVVxrIR1DyhsTOlmMfWBuCtF1SFn19qVIDKpOH6vS/6YQnHzgPBoMz8bS6msnymlCjhTpcZFj1GVCJWqVIZFxSRjKXUJJIqKFIVSHCtj3YuXpGIEY6WGSTIklf9+0XH9nF5ySKm4qATIK+sT0zwXN09sqOlJfI8TlNbUzbUeItVax0Aw1LqHUOupVsGlVkwcy8oSTWRO0QkshV5cOvC0VimwoJsHi0sy/XjkeRMABXfRj9VS6znQ1/oD3UScc0sC+FNKcIIy5pImxmj/2hjlkPog7y4hgzbx0mSZkbGsLKHMmKQwpoeUdYB0RKTSnoKYGhPDIhwbQmcj1s7Q6HRojGd9VOCwJp8IszDsAbg1Znx+tz7yyJmC66oaguhX1RIh+WlVDKskO7tbc/4nXLlbaSV8wchOzMsNgtoYHUrWBJXSdcW1LxNS7vGLHOvm2Tuco7t1OME0jZxW0zT+ddMYX06raXha5PvNuGm8rDEcy8puGYtGsEbKmKOvxUDa3Wk1zQhHhJd0aobWMIuXTXM/sBYf+LmFLXlalJSyEOUJr3X9BZjV9TekdV1vgfy+rtcIyW9J3Ps39SvHsrJbRq6JNSavEoGtdDw+4NwBJTkPFsubb+yuyTtUWliLxWt9z+eeFNbtAQGbnFFcZzjhpW1nu5u2bfcA08t+9ZkxRdi2V7k0yb4AGy6BlcSSbLsGZqL+sv8s3IDx834vMYDFnuW2pOYG65ZKQszsNiFh3R46m9lKJtjihPa5w8wHyseuvvgOhM/PV/jUhZZjsaLRMUoK2bV4fGD/8Ve9QYfF0WsjLocgCK64mABbkrLd+nDnhG0rPOAPPEWC1cYBKDl8urj4+kQxwija4CqKUhyiJ+BBllxLdA5RtAWQr6i++PR9AiKNvnLrrsQR6c4Sd5jsouiORNBln2k3AMSt41f2S98eoN7whv8JPwG+RVJ5t6eocQAAAABJRU5ErkJggg==';
+// =====================================================================================
+// REEMPLAZAR ESTE BLOQUE COMPLETO con las preguntas reales de la materia.
+// Reglas obligatorias (ver references/question-writing-guide.md para el detalle):
+//  - 4 secciones (bloques), una por cada tema grande del avance/silabo indicado.
+//  - Cada sección necesita un POOL de al menos 8 preguntas (aquí solo hay 2-3 de
+//    ejemplo por brevedad); QUESTIONS_PER_SECTION elige un subconjunto al azar de
+//    ese pool en cada intento, para que el examen varie entre estudiantes.
+//  - Preguntas de escenario (2-4 lineas de contexto aplicado), nunca definiciones
+//    sueltas. Las opciones incorrectas deben ser trampas plausibles, no absurdas.
+//  - El campo "just" explica por que la correcta es correcta Y por que cada
+//    incorrecta falla especificamente (no un parrafo generico).
+//  - Sin tildes ni caracteres acentuados en los strings de preguntas (se usa asi en
+//    todo el archivo por convención/compatibilidad); la ñ SI se conserva cuando
+//    cambia el significado de la palabra (año, diseño, etc.).
+//  - NUNCA uses un apostrofe (') dentro del texto: las cadenas usan comillas
+//    simples como delimitador JS. Si necesitas comillas dentro del texto, usa
+//    comillas dobles rectas (") -- nunca seas literal con ' en contracciones etc.
+// =====================================================================================
+const SECTIONS = [
+ {
+  "id": 0,
+  "title": "Fundamentos, SDLC y modelos de proceso",
+  "icon": "📘",
+  "color": "blue",
+  "type": "multiple",
+  "desc": "Ingeniería frente a artesanía, mitos y capas de Pressman, curva de fallos y mantenimiento, SDLC con sus artefactos y gates, principios de diseño y modelos de proceso (cascada, prototipos, DRA, incremental, espiral, ágil)",
+  "questions": [
+   {
+    "text": "Un municipio del oriente boliviano usó durante dos años un sistema de alerta de focos de calor que programó un único voluntario. Cuando esa persona se mudó, nadie supo corregir un error que retrasaba las alertas, porque no existía especificación ni documentación. Según la definición de ingeniería de software del Bloque 1, ¿cuál es el diagnóstico más preciso?",
+    "opts": [
+     "El sistema falló porque se programó en un lenguaje poco conocido; bastaba con reescribirlo en uno más popular.",
+     "Se trató de programación artesanal: el código funcionaba, pero su calidad dependía de una sola persona y de su memoria, sin un proceso sistemático, disciplinado y medible que planifique, especifique, mida y documente.",
+     "El problema fue de gestión: si se hubiera sumado más gente al proyecto cuando surgió el error, se habría resuelto a tiempo.",
+     "Faltó auditar las ocho características de ISO/IEC 25010 antes de publicar el sistema; con eso el error no habría existido."
+    ],
+    "correct": 1,
+    "just": "Correcta: «programación artesanal». El material contrasta programar (código que funciona hoy, depende de quién lo escribió y de su memoria) con ingeniería (un proceso que se repite y que planifica, especifica, mide y documenta para que la calidad no dependa de una sola persona). La opción del lenguaje poco conocido cambia el foco a la herramienta: el material nunca atribuye el problema al lenguaje. La de sumar más gente reproduce el mito de gestión de Pressman, que el curso presenta como una creencia falsa. La de auditar las ocho características de ISO/IEC 25010 exagera: en el MVP no se audita cada característica, y una auditoría no reemplaza la documentación ni el proceso."
+   },
+   {
+    "text": "Un AI Pod recibe como único insumo el objetivo general «mejorar la respuesta ante incendios en Santa Cruz» y empieza a construir de inmediato. Al final de la semana, tres Pods con el mismo objetivo presentan sistemas totalmente distintos entre sí y ninguno coincide con lo que la gobernación necesitaba. ¿Qué mito de Pressman describe mejor esta situación?",
+    "opts": [
+     "El mito de gestión: «si nos atrasamos, sumamos gente».",
+     "El mito con IA: «la IA ya entiende lo que quiero».",
+     "El mito del cliente: «con un objetivo general alcanza».",
+     "Ninguno: es un problema de portabilidad según ISO/IEC 25010."
+    ],
+    "correct": 2,
+    "just": "Correcta: el mito del cliente, «con un objetivo general alcanza». El material explica que, sin requisitos claros, cada Pod construye un sistema distinto al que el problema necesita, que es el síntoma exacto del escenario. El mito de gestión corresponde a otra situación (agregar personas para recuperar un atraso) y aquí nadie sumó gente. El mito con IA aplicaría si el equipo hubiera delegado en una IA la interpretación del objetivo, cosa que el escenario no menciona. La opción de portabilidad confunde un mito de proceso con una característica de calidad: la portabilidad trata de llevar el software a otros entornos, no de la falta de requisitos."
+   },
+   {
+    "text": "A mitad del cursado, un Pod va atrasado con su MVP. La coordinación decide incorporar cuatro estudiantes de otro Pod que no participaron en la mob elaboration ni conocen el backlog. Según el Bloque 1, ¿qué efecto es esperable?",
+    "opts": [
+     "El ciclo se alarga: más manos sin contexto compartido no lo acortan, porque hay que transferir ese contexto antes de que aporten.",
+     "El ciclo se acorta proporcionalmente, porque el trabajo se divide entre más personas.",
+     "No hay efecto, porque en AI-DLC la IA ejecuta todo y el tamaño del equipo es irrelevante.",
+     "El ciclo se acorta solo si los cuatro estudiantes nuevos dominan ISO/IEC 25010."
+    ],
+    "correct": 0,
+    "just": "Correcta: «el ciclo se alarga». El mito de gestión («si nos atrasamos, sumamos gente») se refuta en el material con la idea de que más manos sin contexto compartido no acortan el ciclo, lo alargan. La opción de que el ciclo se acorta proporcionalmente es la creencia misma del mito. La de que el tamaño del equipo es irrelevante porque la IA ejecuta todo es una generalización que contradice AI-DLC: las personas deciden y revisan en cada gate, y para eso necesitan contexto. La de dominar ISO/IEC 25010 introduce un criterio que el material nunca vincula con la velocidad del equipo."
+   },
+   {
+    "text": "Un Pod escribe a un asistente de IA: «haz un sistema de alertas de incendio» y obtiene en minutos una aplicación genérica que no considera escuelas, ni conectividad rural, ni las normas locales. Un integrante concluye: «la IA vino a eliminar los viejos problemas de la ingeniería de software». ¿Qué responde la idea clave del Bloque 1?",
+    "opts": [
+     "Tiene razón: con IA generativa los mitos de Pressman quedaron obsoletos.",
+     "Tiene razón solo si se usa el modelo de IA más reciente del mercado.",
+     "Se equivoca porque la IA no puede generar código; solo sirve para redactar documentos.",
+     "Se equivoca: la IA no elimina los mitos de Pressman, los ejecuta más rápido si nadie los corrige antes; sin especificar, produce una respuesta genérica y no la correcta para este problema."
+    ],
+    "correct": 3,
+    "just": "Correcta: la que afirma que la IA no elimina los mitos de Pressman, sino que los ejecuta más rápido si nadie los corrige; es la idea clave de la diapositiva de mitos, y sin especificación la IA entrega una respuesta genérica. La opción de que los mitos quedaron obsoletos es justo la conclusión que el curso desmiente. La del modelo de IA más reciente traslada el problema a la herramienta, cuando el material lo ubica en la falta de especificación. La de que la IA no puede generar código es falsa según el propio curso: en Construction la IA genera y el equipo dirige."
+   },
+   {
+    "text": "Un Pod que trabaja con listas de espera de un centro de salud propone auditar, antes de entregar el MVP, las ocho características de ISO/IEC 25010 con el mismo nivel de profundidad. ¿Qué indica el material sobre este planteamiento?",
+    "opts": [
+     "Es obligatorio: ISO/IEC 25010 exige auditar las ocho características en cualquier entrega.",
+     "Es innecesario: el material presenta ISO/IEC 25010 como un panorama; no se audita cada característica en el MVP, sino que se prioriza según el problema elegido.",
+     "Es incorrecto porque ISO/IEC 25010 es un modelo de proceso que reemplaza a la cascada, no un modelo de calidad.",
+     "Es incorrecto porque ISO/IEC 25010 solo define cuatro características: usabilidad, seguridad, fiabilidad y portabilidad."
+    ],
+    "correct": 1,
+    "just": "Correcta: «es innecesario». La diapositiva de calidad aclara que no se audita cada característica en el MVP y que se prioriza según el problema elegido. La opción de que es obligatorio es una generalización absoluta que el material contradice. La que llama a ISO/IEC 25010 modelo de proceso confunde categorías: es un modelo de calidad del producto; cascada, incremental, iterativo y ágil son los modelos de proceso. La que limita la norma a cuatro características reduce arbitrariamente la lista: el material presenta ocho."
+   },
+   {
+    "text": "Durante la clase, un estudiante afirma: «Con AI-DLC ya no existen el análisis, el diseño ni la verificación; la IA pasa directamente del problema al código». Según la diapositiva del ciclo de vida, ¿cuál es la respuesta correcta?",
+    "opts": [
+     "Es cierto: AI-DLC elimina las etapas intermedias y solo conserva la construcción y la operación.",
+     "Es cierto solo en la fase Construction, donde la IA reemplaza el análisis y el diseño.",
+     "Es falso: AI-DLC agrega nuevas etapas al ciclo, que pasa de seis a nueve.",
+     "Es falso: las etapas (análisis, especificación, diseño, construcción, verificación, operación y mantenimiento) no desaparecen, se comprimen y se reorganizan en tres fases gobernadas por decisión humana."
+    ],
+    "correct": 3,
+    "just": "Correcta: la que afirma que las etapas no desaparecen, se comprimen y se reorganizan en tres fases gobernadas por decisión humana; es el título y la conclusión de la diapositiva del ciclo de vida. Las opciones que dan la razón al estudiante (con o sin la restricción a Construction) repiten una afirmación que el material desmiente. La que habla de pasar de seis a nueve etapas inventa una cifra: el material no agrega etapas, reorganiza las existentes en Inception, Construction y Operación."
+   },
+   {
+    "text": "La gobernación debe adaptar un reporte mensual cuyo formato está fijado por un decreto vigente que no se modificará. Los requisitos son pocos, están bien entendidos por todos y el riesgo de cambio es bajo. Según la tabla «Cuándo conviene cada modelo», ¿qué modelo de proceso encaja mejor?",
+    "opts": [
+     "Cascada.",
+     "Iterativo.",
+     "Ágil.",
+     "Incremental."
+    ],
+    "correct": 0,
+    "just": "Correcta: cascada. El material la asocia con requisitos estables y bien entendidos y con bajo riesgo de cambio, las condiciones exactas del escenario. El iterativo conviene cuando el problema se refina por ciclos cortos de prueba y ajuste, lo que aquí no hace falta. El ágil se justifica con cambio frecuente y cliente involucrado en cada entrega, y el escenario dice que nada cambiará. El incremental conviene cuando se necesita entregar valor parcial pronto en bloques funcionales, necesidad que el caso no plantea."
+   },
+   {
+    "text": "Faltan seis semanas para la temporada de quemas. Una asociación de brigadistas necesita usar cuanto antes algo útil: primero el registro de focos reportados; luego, en una segunda entrega, el mapa; y después, los reportes para autoridades. Cada parte debe funcionar por sí sola al entregarse. ¿Qué modelo recomienda el material?",
+    "opts": [
+     "Cascada, porque conviene esperar a tener el sistema completo antes de entregarlo.",
+     "Incremental, porque se necesita entregar valor parcial pronto, en bloques funcionales.",
+     "Iterativo, porque el problema no se entiende y debe refinarse con prototipos desechables.",
+     "IA totalmente autónoma, porque es el camino más rápido."
+    ],
+    "correct": 1,
+    "just": "Correcta: incremental. El material lo define como el modelo para entregar valor parcial pronto, en bloques funcionales, y el escenario describe tres bloques que funcionan por separado. La cascada contradice la urgencia: entrega al final y conviene con requisitos estables, no con plazos de temporada. La opción iterativa describe refinar el problema por ciclos de prueba y ajuste, pero aquí el problema está claro; lo que apremia es entregar partes. La IA totalmente autónoma no es un modelo de proceso de la tabla: es uno de los extremos que el curso descarta porque no deja un responsable identificable."
+   },
+   {
+    "text": "Una organización comunitaria de Roboré cambia sus prioridades casi cada semana según lo que ocurre en el territorio, y su representante pide revisar y opinar sobre cada entrega del sistema antes de continuar. ¿Qué modelo de proceso corresponde según el material?",
+    "opts": [
+     "Cascada, porque garantiza que los requisitos se congelen desde el inicio.",
+     "Incremental, porque lo decisivo es dividir el sistema en bloques funcionales.",
+     "Ágil, porque hay cambio frecuente y el cliente se involucra en cada entrega.",
+     "Iterativo, porque el único criterio es repetir ciclos de prueba sin participación del cliente."
+    ],
+    "correct": 2,
+    "just": "Correcta: ágil. El material lo asocia con cambio frecuente y cliente involucrado en cada entrega, las dos condiciones del escenario. La cascada exige estabilidad de requisitos, lo contrario de lo descrito. La opción incremental pone el foco en dividir en bloques funcionales, pero no responde al rasgo clave del caso: prioridades cambiantes con participación constante del cliente. La opción iterativa distorsiona el modelo: el material lo describe como refinar el problema por ciclos cortos de prueba y ajuste, y agrega una condición («sin participación del cliente») que no aparece en el material."
+   },
+   {
+    "text": "El jefe de sistemas de un municipio compra computadoras nuevas y licencias de un asistente de IA para programar, y anuncia: «con estas herramientas la calidad del nuevo sistema de autorizaciones de chaqueo está garantizada». No existe un proceso definido ni revisiones. Según Pressman, ¿cuál es el análisis más preciso de esta afirmación?",
+    "opts": [
+     "Es correcta, porque Pressman afirma que las herramientas son la capa fundamental de la ingeniería del software, sobre la que se apoyan los métodos y el proceso.",
+     "Es un mito de gestión: la ingeniería del software es una tecnología multicapa apoyada en un compromiso organizacional con la calidad, cuyo fundamento es la capa de proceso; las herramientas solo dan soporte automático o semiautomático al proceso y a los métodos.",
+     "Es un mito del cliente, porque quien compra las herramientas es el cliente y no el equipo de desarrollo.",
+     "Es correcta siempre que las herramientas sean CASE y no solo hardware, ya que las herramientas CASE bastan para garantizar la calidad."
+    ],
+    "correct": 1,
+    "just": "Correcta: la que lo identifica como mito de gestión y ubica el proceso como fundamento. Pressman enumera entre los mitos de gestión «mi gente dispone de las herramientas más avanzadas» y describe la ingeniería del software como tecnología multicapa: sobre un compromiso con la calidad, el proceso es la unión que mantiene juntas las capas; los métodos indican el «cómo» y las herramientas dan soporte automático. La opción que pone a las herramientas como capa fundamental invierte las capas. La del mito del cliente confunde la categoría: quien sostiene el mito es un gestor. La de las herramientas CASE parte de un dato real (Pressman dice que las CASE importan más que el hardware), pero lo convierte en una garantía absoluta que el autor nunca afirma."
+   },
+   {
+    "text": "Al terminar el despliegue del sistema de turnos de un centro de salud, un integrante del Pod dice: «Ya funciona en producción, nuestro trabajo terminó». Pressman clasifica esta idea como un mito de los desarrolladores. ¿Qué dato de la realidad presenta el autor para refutarla, y con qué idea del curso es coherente?",
+    "opts": [
+     "Entre el 20 % y el 40 % del esfuerzo ocurre después de la primera entrega; es coherente con la idea de que el MVP es la versión definitiva.",
+     "Entre el 60 % y el 80 % del esfuerzo dedicado a un programa se realiza después de la primera entrega al cliente; es coherente con la idea de AI-DLC de que «el go-live no es el final».",
+     "La revisión técnica formal es más efectiva que la prueba para ciertos defectos; es coherente con el Gate 5 de pruebas.",
+     "Añadir gente a un proyecto retrasado lo retrasa aún más; es coherente con el formato mob de los AI Pods."
+    ],
+    "correct": 1,
+    "just": "Correcta: la del 60 % al 80 % del esfuerzo posterior a la primera entrega, que Pressman usa para refutar el mito «una vez que escribimos el programa y funciona, el trabajo terminó», y que empalma con la fase Operación y el bucle virtuoso. La opción del 20 % al 40 % invierte las cifras y, además, contradice que el MVP evoluciona. La de la revisión técnica formal es un dato real de Pressman, pero refuta otro mito («hasta que el programa no se ejecuta, no puedo comprobar su calidad»). La de añadir gente es la cita de Brooks que refuta un mito de gestión, no uno de desarrolladores."
+   },
+   {
+    "text": "En Ingeniería de Software I cada Pod entrega el paquete de análisis y diseño del MVP, no el código. Un estudiante objeta: «Si no hay programa ejecutándose, es imposible evaluar la calidad de lo que hicimos». Según Pressman, ¿cuál es la respuesta correcta?",
+    "opts": [
+     "Tiene razón: la calidad solo se mide con pruebas sobre código en ejecución, por eso el Gate 5 es el único punto de control de calidad.",
+     "Tiene razón a medias: sin código solo se puede auditar la norma ISO/IEC 25010 completa, característica por característica.",
+     "Se equivoca: desde el principio del proyecto se puede aplicar la revisión técnica formal, un «filtro de calidad» que Pressman considera más efectivo que la prueba para encontrar ciertas clases de defectos.",
+     "Se equivoca, pero porque la IA puede ejecutar el diseño sin necesidad de programarlo."
+    ],
+    "correct": 2,
+    "just": "Correcta: la de la revisión técnica formal. Pressman refuta el mito de desarrolladores «hasta que no tengo el programa ejecutándose no puedo comprobar su calidad» señalando que la revisión técnica formal puede aplicarse desde el inicio y detecta ciertos defectos mejor que la prueba. La opción que hace del Gate 5 el único control ignora que el SDLC del curso tiene gates desde el objetivo y la viabilidad. La de auditar ISO/IEC 25010 completa contradice el Bloque 1, que dice que en el MVP se prioriza. La de la IA que «ejecuta el diseño» no aparece en el material y contradice la gobernanza humana."
+   },
+   {
+    "text": "Un funcionario argumenta: «El hardware se desgasta, pero el software no; por eso, una vez estable, el sistema de alertas no necesita presupuesto de mantenimiento». Según las curvas de fallos de Pressman, ¿qué ocurre realmente con el software?",
+    "opts": [
+     "El software sigue la misma «curva de bañera» que el hardware: falla al inicio, se estabiliza y luego se desgasta por el uso.",
+     "El software no se estropea, pero se deteriora: cada cambio de mantenimiento puede introducir defectos que generan picos en la curva de fallos, y el nivel mínimo de fallos va subiendo con el tiempo.",
+     "El software nunca vuelve a fallar una vez corregidos los defectos iniciales, porque la curva idealizada es plana.",
+     "El software se estropea como el hardware, pero se repara igual: sustituyendo el componente dañado por una pieza de repuesto."
+    ],
+    "correct": 1,
+    "just": "Correcta: «no se estropea, pero se deteriora». Pressman contrasta la curva de bañera del hardware con la curva real del software: los cambios introducen nuevos defectos, se producen picos y el mínimo de fallos crece; por eso el mantenimiento es inevitable. La opción de la curva de bañera aplica al software una curva que el autor reserva para el hardware. La de la curva plana toma la curva idealizada, que Pressman llama una gran simplificación, como si fuera la real. La de las piezas de repuesto contradice una diferencia explícita: en el software no hay piezas de repuesto, cada fallo indica un error de diseño o de traducción a código."
+   },
+   {
+    "text": "Un año después de desplegado el sistema de alertas por humo, el proveedor de mensajería SMS cambia su interfaz de servicio y la forma de autenticarse. El sistema no tiene defectos y nadie pidió funciones nuevas, pero sin cambios dejará de enviar alertas. Según Pressman, ¿qué tipo de mantenimiento corresponde?",
+    "opts": [
+     "Correctivo, porque el sistema dejará de enviar alertas.",
+     "Perfectivo, porque se modificará el código del módulo de mensajería.",
+     "Preventivo, porque se actúa antes de que el sistema falle.",
+     "Adaptativo, porque cambió el entorno externo para el que se desarrolló el software."
+    ],
+    "correct": 3,
+    "just": "Correcta: adaptativo. Pressman lo define como la modificación del software para acomodarlo a cambios de su entorno externo (sistema operativo, reglas, características externas de otros productos), como la nueva interfaz del proveedor de SMS. El correctivo corrige defectos, y el escenario aclara que no los hay: el fallo futuro proviene del entorno. El perfectivo lleva el software más allá de sus requisitos funcionales originales, y nadie pidió funciones nuevas. El preventivo (reingeniería) combate el deterioro interno del software; actuar «antes del fallo» no basta para clasificarlo así cuando la causa es externa."
+   },
+   {
+    "text": "Un Pod construye rápidamente un prototipo navegable del registro de denuncias ambientales. La organización cliente queda encantada y pide: «hagan unos pequeños ajustes y úsenlo como sistema final». El prototipo se hizo con decisiones apresuradas y sin considerar mantenibilidad. Según Pressman y el Bloque 3, ¿qué debió hacerse para evitar esta situación?",
+    "opts": [
+     "Nada: si el cliente está satisfecho, el prototipo debe evolucionar hacia el producto final; es el objetivo del paradigma de prototipos.",
+     "Cambiar al modelo DRA, que convierte automáticamente los prototipos en sistemas de producción en 60 a 90 días.",
+     "Acordar desde el inicio las reglas del juego: el prototipo se construye como mecanismo para definir requisitos y se desecha; un prototipo que se puede tirar sin dolor es un buen prototipo.",
+     "Hacer el prototipo en alta fidelidad desde el principio, con colores y tipografía finales, para que sirva directamente como producto."
+    ],
+    "correct": 2,
+    "just": "Correcta: acordar desde el inicio que el prototipo es un mecanismo de definición de requisitos. Pressman advierte que el cliente ve «una versión de trabajo» sin saber que está hecha con «chicle y cable de embalar», y recomienda resistir la presión de convertir un mal prototipo en producto final; el Bloque 3 agrega que un prototipo que se puede tirar sin dolor es un buen prototipo. La opción de dejarlo evolucionar es justo el problema descrito. La del DRA inventa una conversión automática: el DRA es otra cosa, un modelo lineal de alta velocidad basado en componentes. La de alta fidelidad contradice el Bloque 3, que pide prototipos de baja fidelidad para validar el flujo antes de invertir en diseño."
+   },
+   {
+    "text": "Un Pod propone usar el modelo DRA para su sistema de alerta temprana porque «entrega un sistema completo en 60 a 90 días». El sistema debe integrar una tecnología de sensores que nadie en el equipo usó nunca y requiere un alto grado de interoperabilidad con sistemas municipales heredados. Según Pressman, ¿cuál es la evaluación correcta?",
+    "opts": [
+     "El DRA es ideal, porque su énfasis en componentes reutilizables reduce siempre el tiempo de pruebas, incluso con tecnologías nuevas.",
+     "El DRA no es adecuado cuando los riesgos técnicos son altos, por ejemplo, cuando se usan tecnologías nuevas o se requiere un alto grado de interoperabilidad con programas existentes.",
+     "El DRA no es adecuado porque es un modelo evolutivo en espiral y no lineal, y el proyecto necesita linealidad.",
+     "El DRA es adecuado solo si el Pod tiene exactamente 7 integrantes, como un equipo Scrum."
+    ],
+    "correct": 1,
+    "just": "Correcta: la de los riesgos técnicos altos. Pressman enumera entre los inconvenientes del DRA que no es adecuado con tecnologías nuevas o alta interoperabilidad con software existente, justo las dos condiciones del escenario. La opción de «reduce siempre el tiempo de pruebas» generaliza: la reutilización reduce pruebas de componentes ya probados, pero los nuevos y todas las interfaces deben probarse a fondo. La que lo llama evolutivo en espiral se equivoca de categoría: Pressman define el DRA como una adaptación de alta velocidad del modelo lineal secuencial. La de los 7 integrantes mezcla la cifra de Scrum (Bloque 1) con un requisito del DRA que no existe; lo que el DRA exige son recursos humanos suficientes para formar los equipos necesarios."
+   },
+   {
+    "text": "Una gobernación encarga un sistema grande de gestión de incendios con riesgos técnicos y de gestión elevados. Quiere avanzar en versiones cada vez más completas y, en cada vuelta, evaluar explícitamente los riesgos y obtener la reacción del cliente antes de seguir. ¿Qué modelo de Pressman responde mejor a estas condiciones, y por qué?",
+    "opts": [
+     "El modelo incremental, porque cada incremento entrega un producto operacional y eso elimina la necesidad de analizar riesgos.",
+     "El modelo lineal secuencial, porque su enfoque sistemático es el más adecuado para proyectos grandes y críticos.",
+     "La construcción de prototipos, porque es el único modelo que permite obtener la reacción del cliente.",
+     "El modelo en espiral de Boehm, que combina la naturaleza iterativa de los prototipos con los aspectos controlados del lineal y tiene una región de tareas dedicada al análisis de riesgos técnicos y de gestión, además de una de evaluación del cliente."
+    ],
+    "correct": 3,
+    "just": "Correcta: el espiral. Pressman lo presenta como evolutivo, con regiones de tareas (comunicación con el cliente, planificación, análisis de riesgos, ingeniería, construcción y acción, evaluación del cliente) y como enfoque realista para sistemas a gran escala, usando prototipos como mecanismo de reducción de riesgos. El incremental sí entrega un producto operacional en cada incremento, pero nada en el material dice que elimine el análisis de riesgos, ni tiene una región dedicada a ello. El lineal secuencial tiene dificultades con la incertidumbre y no entrega versiones hasta muy avanzado el proyecto. Los prototipos permiten la reacción del cliente, pero no son el único modelo que lo hace y no se diseñan para entregar un sistema de producción."
+   },
+   {
+    "text": "Un documento del Pod dice: «El centro de salud periurbano necesita reducir la espera promedio de los pacientes de primer nivel, porque hoy muchos abandonan la fila sin ser atendidos; el éxito se medirá con la reducción de abandonos». Según el material de SDLC, ¿a qué artefacto corresponde este contenido y en qué gate se revisa?",
+    "opts": [
+     "Al PRD, porque expresa qué producto necesita el negocio o el usuario y por qué; se revisa en el Gate 2, junto con el SRS.",
+     "Al SRS, porque describe el comportamiento esperado del sistema; se revisa en el Gate 3, junto con la arquitectura.",
+     "Al Release Plan, porque define criterios de éxito; se aprueba en el Gate 4.",
+     "A la arquitectura, porque justifica decisiones técnicas; se revisa en el Gate 3."
+    ],
+    "correct": 0,
+    "just": "Correcta: PRD y Gate 2. El material define el PRD como «qué producto necesita el negocio/usuario y por qué», e incluye problema, objetivo medible y criterios de éxito; el Gate 2 revisa PRD y SRS. El SRS describe requisitos del sistema y comportamiento esperado, y el texto no describe ningún comportamiento; además el Gate 3 corresponde a diseño y arquitectura. El Release Plan ordena entregas, qué entra en cada release y cuándo, no el problema ni el objetivo del producto. La arquitectura organiza la solución en componentes, interfaces y datos; el texto no toma ninguna decisión técnica."
+   },
+   {
+    "text": "Un Pod presenta su Release Plan aprobado por el Cliente/CXM, pero en la carpeta no hay ningún diagrama de arquitectura y nadie verificó que el diseño fuera coherente con el PRD y el SRS. Según los gates de control del material de SDLC, ¿qué gate se saltó y por qué es grave?",
+    "opts": [
+     "El Gate 2, porque sin arquitectura no se puede revisar el SRS.",
+     "El Gate 3, que exige el diseño con el diagrama de arquitectura como evidencia obligatoria y su coherencia con PRD y SRS; se aprobó el orden de entrega de algo cuya organización nadie validó.",
+     "El Gate 5, porque el diagrama de arquitectura se presenta junto con las pruebas y los criterios de aceptación.",
+     "Ninguno: el Gate 4 del Release Plan reemplaza al de diseño cuando el cliente ya aprobó."
+    ],
+    "correct": 1,
+    "just": "Correcta: el Gate 3. El material define la etapa de diseño con el diagrama de arquitectura obligatorio como evidencia y un gate de «arquitectura coherente con PRD/SRS»; el mapa antes de programar pone la arquitectura antes del Release Plan. El Gate 2 revisa PRD y SRS, que no dependen de la arquitectura. El Gate 5 corresponde a pruebas y criterios de aceptación, no al diseño. La opción de que el Gate 4 reemplaza al 3 contradice la secuencia: el propio Gate 4 del Release Plan presupone PRD, SRS y arquitectura."
+   },
+   {
+    "text": "En el diseño del sistema de brigadas, una sola clase GestorDeFocos registra los reportes, calcula el nivel de riesgo, envía los SMS y genera el PDF para la gobernación. Cada vez que cambia el formato del PDF se rompe el envío de SMS. ¿Qué principio del material de SDLC se viola de forma más directa?",
+    "opts": [
+     "DRY, porque el mismo código aparece copiado en varios lugares.",
+     "KISS, porque la clase es demasiado simple para la complejidad del problema.",
+     "Seguridad desde el diseño, porque los SMS deberían cifrarse.",
+     "SOLID (cada módulo, una razón para cambiar) junto con alta cohesión y bajo acoplamiento: la clase tiene cuatro razones para cambiar y sus partes se afectan entre sí."
+    ],
+    "correct": 3,
+    "just": "Correcta: SOLID con cohesión y acoplamiento. El material resume SOLID como «responsabilidades claras: cada módulo, una razón para cambiar» y pide módulos independientes entre sí y consistentes por dentro; el síntoma de que un cambio en el PDF rompa los SMS muestra acoplamiento indebido. DRY aplicaría si hubiera código repetido, y el escenario no describe repetición. KISS pide la solución más simple que funcione; el problema aquí no es exceso de simplicidad, sino mezcla de responsabilidades. La seguridad desde el diseño es un principio real, pero el escenario no plantea ningún problema de seguridad."
+   },
+   {
+    "text": "Todas las pruebas del QA sobre el sistema de listas de espera pasan en verde. En la sesión de revisión, la jefa de enfermería observa que el flujo modelado no coincide con la forma en que realmente se asignan los turnos de emergencia. Según los roles del material de SDLC y el Bloque 2, ¿cuál es la interpretación correcta?",
+    "opts": [
+     "El QA realizó la verificación de requisitos y calidad; la jefa de enfermería, como stakeholder, realiza la validación; ambas son necesarias y el hallazgo de ella es un defecto de validación.",
+     "Como las pruebas pasaron, el sistema está validado; la observación de la jefa de enfermería debe registrarse como un requisito nuevo para una versión futura.",
+     "La jefa de enfermería está haciendo verificación, porque revisa que el sistema funcione bien; la validación corresponde al QA.",
+     "El Business Analyst debe aprobar el sistema en lugar de la jefa de enfermería, porque es quien traduce las necesidades en requisitos."
+    ],
+    "correct": 0,
+    "just": "Correcta: verificación por el QA y validación por el stakeholder. El material de SDLC asigna al QA la «verificación de requisitos y calidad» y a los stakeholders la «validación y decisiones de negocio»; el Bloque 2 distingue «¿lo escribimos bien?» de «¿escribimos lo que necesitan?». La opción de que pasar las pruebas equivale a validar confunde ambos conceptos, y postergar el hallazgo ignora que el flujo no refleja la realidad actual. La que asigna la verificación a la jefa de enfermería invierte los roles. La del Business Analyst también se equivoca: su rol es traducir necesidades en requisitos, no reemplazar la validación de quien vive el proceso."
+   }
+  ]
+ },
+ {
+  "id": 1,
+  "title": "AI-DLC, Scrum e historias de usuario",
+  "icon": "🤖",
+  "color": "purple",
+  "type": "multiselect",
+  "desc": "Gobernanza AI-DLC y AI Pods, principios, aspectos, roles y fases de la Guía SBOK, historias de usuario (INVEST, estimación, división, disfunciones) y riesgos propios de la IA",
+  "questions": [
+   {
+    "text": "Un docente de otra carrera pregunta qué es AI-DLC. Según el material del Bloque 1, selecciona las 2 afirmaciones que lo describen correctamente.",
+    "opts": [
+     "La IA orquesta borradores de planes, requisitos y modelos.",
+     "Las personas revisan, deciden y aprueban en cada gate.",
+     "La IA aprueba automáticamente los requisitos cuando su nivel de confianza es alto.",
+     "Elimina las etapas del ciclo de vida para ganar velocidad.",
+     "Reemplaza la revisión humana por pruebas automatizadas generadas por la misma IA."
+    ],
+    "correct": [
+     0,
+     1
+    ],
+    "just": "Correctas: «la IA orquesta borradores de planes, requisitos y modelos» y «las personas revisan, deciden y aprueban en cada gate»; el material define AI-DLC como desarrollo asistido por IA con gobernanza humana. La opción de que la IA aprueba automáticamente invierte los roles: la aprobación es humana. La de eliminar las etapas del ciclo de vida contradice la diapositiva que dice que las etapas no desaparecen, se comprimen. La de reemplazar la revisión humana por pruebas automatizadas elimina justamente la gobernanza humana, el rasgo que define AI-DLC."
+   },
+   {
+    "text": "El material ubica AI-DLC como un «camino intermedio entre el lápiz y el piloto automático». Selecciona las 2 afirmaciones que caracterizan correctamente los extremos que el curso NO sigue.",
+    "opts": [
+     "Desarrollo tradicional: la persona ejecuta y decide todo; es riguroso, pero lento frente a la escala del problema.",
+     "IA totalmente autónoma: la IA ejecuta y decide sin revisión humana; es rápida, pero sin responsable identificable.",
+     "Desarrollo tradicional: es rápido, pero no tiene un responsable identificable.",
+     "IA totalmente autónoma: es lenta, pero rigurosa, porque la IA revisa cada decisión.",
+     "AI-DLC: la IA decide y la persona ejecuta lo que la IA le indica."
+    ],
+    "correct": [
+     0,
+     1
+    ],
+    "just": "Correctas: la que describe el desarrollo tradicional como riguroso pero lento (la persona ejecuta y decide todo) y la que describe la IA totalmente autónoma como rápida pero sin responsable identificable; son los extremos A y B de la diapositiva. Las dos opciones que dicen que el tradicional es rápido sin responsable y que la IA autónoma es lenta pero rigurosa intercambian las características de los extremos. La que dice que en AI-DLC la IA decide y la persona ejecuta invierte el camino del curso: la IA ejecuta y la persona conserva criterio, decisión y responsabilidad en cada gate."
+   },
+   {
+    "text": "Un Pod arma un cartel con las tres fases de AI-DLC. Selecciona las 3 asociaciones fase-actividad que son correctas según el material.",
+    "opts": [
+     "Inception: elaboración colaborativa, historias de usuario y Units of Work pequeñas.",
+     "Construction: la IA genera, el equipo dirige; revisión continua en ciclos de horas.",
+     "Operación: despliegue automatizado e IA que vigila producción.",
+     "Inception: despliegue automatizado del MVP en producción.",
+     "Construction: sprints de varias semanas con revisión solo al final.",
+     "Operación: el go-live marca el final del ciclo."
+    ],
+    "correct": [
+     0,
+     1,
+     2
+    ],
+    "just": "Correctas: Inception con elaboración colaborativa, historias de usuario y Units of Work pequeñas; Construction con la IA que genera y el equipo que dirige en ciclos de horas; y Operación con despliegue automatizado e IA que vigila producción. La opción que ubica el despliegue automatizado en Inception confunde una actividad de Operación. La de sprints de varias semanas con revisión al final contradice Construction, que trabaja en ciclos de horas con revisión continua. La de que el go-live marca el final niega la frase central de Operación y el bucle virtuoso."
+   },
+   {
+    "text": "Ya en Operación, el sistema de un Pod muestra que las alertas llegan tarde a comunidades con cobertura 2G. Según el material, ¿qué ocurre con este aprendizaje? Selecciona las 2 afirmaciones correctas.",
+    "opts": [
+     "Retroalimenta el siguiente Inception, en lo que el material llama un bucle virtuoso.",
+     "Confirma que el go-live no es el final del ciclo.",
+     "Se descarta, porque Operación es la última fase y cierra el proyecto.",
+     "La IA corrige el requisito directamente en producción sin pasar por ningún gate humano.",
+     "Obliga a reiniciar el proyecto completo con un modelo en cascada."
+    ],
+    "correct": [
+     0,
+     1
+    ],
+    "just": "Correctas: «retroalimenta el siguiente Inception» (bucle virtuoso) y «confirma que el go-live no es el final». La opción de descartar el aprendizaje porque Operación cierra el proyecto contradice ambas ideas. La de que la IA corrige el requisito en producción sin gate elimina la gobernanza humana: la IA puede vigilar producción, pero los cambios pasan por decisión humana. La de reiniciar todo en cascada no tiene respaldo en el material: el aprendizaje alimenta un nuevo ciclo de AI-DLC, no un cambio de modelo."
+   },
+   {
+    "text": "Un estudiante compara un equipo Scrum clásico con los AI Pods del curso. Selecciona las 3 características que el material atribuye a los AI Pods.",
+    "opts": [
+     "Están formados por 2 o 3 personas.",
+     "Trabajan en formato mob: el equipo completo revisa en vivo, no al final del ciclo.",
+     "Su cadencia es por bolts: ciclos de horas, no sprints de semanas.",
+     "Mantienen la dimensión de 7 integrantes de Scrum para cubrir todos los roles.",
+     "Cada integrante revisa su parte por separado al cierre del sprint.",
+     "Trabajan en sprints de dos a cuatro semanas."
+    ],
+    "correct": [
+     0,
+     1,
+     2
+    ],
+    "just": "Correctas: equipos de 2 o 3 personas, formato mob con revisión en vivo y cadencia por bolts de horas; la diapositiva «De Scrum de 7 a AI Pods de 2–3» describe esas tres características. La opción de mantener 7 integrantes toma la cifra de Scrum que el propio título dice que se abandona. La de revisar cada parte por separado al cierre del sprint contradice el formato mob. La de sprints de dos a cuatro semanas contradice la cadencia por bolts."
+   },
+   {
+    "text": "Un Pod propone construir una aplicación de pedidos de comida porque «es fácil de programar y agrega un módulo de reciclaje para cumplir con lo sostenible». Selecciona las 2 afirmaciones que están de acuerdo con el material sobre sostenibilidad.",
+    "opts": [
+     "La sostenibilidad no es el contenido del proyecto, sino el criterio con el que se elige y se evalúa el problema.",
+     "Un Pod no elige un problema porque sea fácil de programar, sino porque es verificable y sostenible.",
+     "Basta con que el sistema incluya un módulo con temática ambiental para cumplir el criterio.",
+     "La facilidad de programación es el primer criterio para elegir el problema del Pod.",
+     "La sostenibilidad se limita a la dimensión ambiental."
+    ],
+    "correct": [
+     0,
+     1
+    ],
+    "just": "Correctas: «la sostenibilidad es el criterio con el que se elige y se evalúa el problema, no su contenido» y «un Pod elige un problema porque es verificable y sostenible, no porque sea fácil de programar»; reproducen la diapositiva «No es el tema, es el filtro» y su idea clave. La opción del módulo de temática ambiental trata la sostenibilidad como adorno, justo lo que el material descarta. La que pone la facilidad de programación como primer criterio invierte la idea clave. La que limita la sostenibilidad a lo ambiental ignora las dimensiones social, económica y cultural o de gobernanza."
+   },
+   {
+    "text": "Al evaluar si el problema elegido por su Pod es sostenible, el equipo debe revisar las dimensiones que presenta el material (con base en el Manual UPDS). Selecciona las 4 dimensiones correctas.",
+    "opts": [
+     "Ambiental.",
+     "Social.",
+     "Económica.",
+     "Cultural / gobernanza.",
+     "Portabilidad.",
+     "Rentabilidad comercial inmediata."
+    ],
+    "correct": [
+     0,
+     1,
+     2,
+     3
+    ],
+    "just": "Correctas: ambiental, social, económica y cultural o de gobernanza, las cuatro dimensiones de la diapositiva de sostenibilidad. La portabilidad es real, pero pertenece a otro tema del mismo bloque: es una característica de calidad de ISO/IEC 25010, no una dimensión de sostenibilidad. La rentabilidad comercial inmediata no aparece en el material y contradice la idea de elegir un problema por ser verificable y sostenible."
+   },
+   {
+    "text": "Al cerrar el Bloque 1, un Pod prepara la carpeta de evidencias de la fase Inception. Selecciona las 3 evidencias que el material pide para este bloque.",
+    "opts": [
+     "Declaración de Alcance.",
+     "Backlog priorizado de Units of Work.",
+     "Acta de la sesión de mob elaboration.",
+     "SRS acotado al MVP con su Manual de Requisitos de Usuario.",
+     "Código desplegado en producción."
+    ],
+    "correct": [
+     0,
+     1,
+     2
+    ],
+    "just": "Correctas: Declaración de Alcance, backlog priorizado de Units of Work y acta de la sesión de mob elaboration, listadas como evidencia en el cierre del Bloque 1. El SRS acotado al MVP con su Manual de Requisitos de Usuario es real, pero corresponde a la Actividad 2 del Bloque 2, no al cierre del Bloque 1. El código desplegado en producción pertenece a la fase de Operación; en Inception todavía no se despliega nada."
+   },
+   {
+    "text": "Un Pod quiere saltarse la fase Inception «para ganar tiempo» y pedirle a la IA que empiece a programar con la descripción que ya tiene en la cabeza. Selecciona las 2 ideas del material que desaconsejan esa decisión.",
+    "opts": [
+     "La calidad del contexto que se construye al inicio determina la calidad de todo el ciclo.",
+     "En Inception, «la especificidad lo es todo».",
+     "Inception es opcional en AI-DLC cuando la IA es lo bastante potente.",
+     "Construction dura varias semanas, así que habrá tiempo de corregir los requisitos después.",
+     "La IA puede tomar las decisiones de alcance si el Pod le da suficiente libertad."
+    ],
+    "correct": [
+     0,
+     1
+    ],
+    "just": "Correctas: «la calidad del contexto que se construye al inicio determina la calidad de todo el ciclo» (idea clave del Bloque 1) y «en Inception, la especificidad lo es todo». La opción de que Inception es opcional con una IA potente no aparece en el material y contradice ambas ideas. La de que Construction dura semanas es falsa: trabaja en ciclos de horas, y además corregir un requisito tarde cuesta mucho más. La de dejar las decisiones de alcance a la IA viola la gobernanza de AI-DLC: la IA ejecuta y las personas deciden."
+   },
+   {
+    "text": "Un Pod prepara una lámina sobre la Guía SBOK y mezcla principios, aspectos y procesos. Selecciona las 3 que la guía clasifica como principios de Scrum.",
+    "opts": [
+     "Control empírico de procesos.",
+     "Autoorganización.",
+     "Caja de tiempo.",
+     "Justificación del negocio.",
+     "Riesgo.",
+     "Crear el backlog de productos priorizado."
+    ],
+    "correct": [
+     0,
+     1,
+     2
+    ],
+    "just": "Correctas: control empírico de procesos, autoorganización y caja de tiempo, que forman parte de los seis principios de la SBOK junto con colaboración, priorización basada en el valor y desarrollo iterativo. Justificación del negocio y riesgo son reales, pero son dos de los cinco aspectos (organización, justificación del negocio, calidad, cambio y riesgo), no principios. Crear el backlog de productos priorizado es uno de los 19 procesos, de la fase Iniciar. La distinción importa: la SBOK dice que los principios no son negociables, mientras que aspectos y procesos pueden adaptarse."
+   },
+   {
+    "text": "Durante una retrospectiva, el Scrum Master de un equipo explica en qué se apoya el principio de control empírico de procesos de la SBOK. Selecciona las 3 ideas que la guía asocia a ese principio.",
+    "opts": [
+     "Transparencia.",
+     "Inspección.",
+     "Adaptación.",
+     "Conciencia.",
+     "Articulación.",
+     "Apropiación."
+    ],
+    "correct": [
+     0,
+     1,
+     2
+    ],
+    "just": "Correctas: transparencia, inspección y adaptación, las tres ideas del control empírico de procesos, que según la SBOK ayudan a aprender experimentando cuando el problema no está bien definido. Conciencia, articulación y apropiación son reales, pero pertenecen a otro principio: son las tres dimensiones del trabajo colaborativo del principio de colaboración. Es una trampa de «concepto real de otro principio»."
+   },
+   {
+    "text": "Una organización quiere reducir costos y pregunta qué roles de la SBOK puede omitir sin dejar de hacer Scrum. Selecciona las 3 que la guía considera roles principales (obligatorios).",
+    "opts": [
+     "Propietario del producto.",
+     "Scrum Master.",
+     "Equipo Scrum.",
+     "Cuerpo de Guía de Scrum.",
+     "Partes interesadas del negocio.",
+     "Proveedores."
+    ],
+    "correct": [
+     0,
+     1,
+     2
+    ],
+    "just": "Correctas: propietario del producto, Scrum Master y equipo Scrum, que la SBOK define como roles principales, obligatorios para producir el producto y comprometidos con el éxito de cada sprint. El Cuerpo de Guía de Scrum es un rol no esencial, e incluso la guía lo llama opcional. Las partes interesadas del negocio y los proveedores también son roles no esenciales: deben tenerse en cuenta, pero no son responsables del éxito del proyecto."
+   },
+   {
+    "text": "En un proyecto de trazabilidad de trámites municipales se discute quién hace qué según la SBOK. Selecciona las 3 responsabilidades que la guía asigna al propietario del producto.",
+    "opts": [
+     "Lograr el máximo valor comercial y mantener la justificación comercial del proyecto, como voz del cliente.",
+     "Crear las historias de usuario con sus criterios de aceptación e incorporarlas al backlog priorizado.",
+     "Aceptar durante el sprint los entregables que cumplan los criterios de aceptación predefinidos.",
+     "Eliminar los impedimentos del equipo y garantizar que se sigan los procesos de Scrum.",
+     "Estimar el esfuerzo requerido para desarrollar cada historia de usuario.",
+     "Facilitar y enseñar las prácticas de Scrum a todos los involucrados."
+    ],
+    "correct": [
+     0,
+     1,
+     2
+    ],
+    "just": "Correctas: maximizar el valor y mantener la justificación comercial, crear historias con criterios de aceptación, y aceptar los entregables que los cumplen; las tres aparecen en la SBOK como responsabilidades del propietario del producto. Eliminar impedimentos, garantizar los procesos y facilitar o enseñar las prácticas corresponden al Scrum Master. Estimar las historias corresponde al equipo Scrum, apoyado por el Scrum Master, en el proceso «Estimar historias de usuario». Asignar la estimación al propietario del producto es una inversión de roles frecuente."
+   },
+   {
+    "text": "Un equipo quiere ubicar correctamente sus actividades en las cinco fases de la SBOK. Selecciona los 2 procesos que pertenecen a la fase de Revisión y retrospectiva.",
+    "opts": [
+     "Demostrar y validar el sprint.",
+     "Retrospectiva del sprint.",
+     "Refinar el backlog de productos priorizado.",
+     "Retrospectiva de la versión (release).",
+     "Realizar la reunión diaria.",
+     "Confirmar historias de usuario."
+    ],
+    "correct": [
+     0,
+     1
+    ],
+    "just": "Correctas: demostrar y validar el sprint, y la retrospectiva del sprint, los dos procesos de la fase de Revisión y retrospectiva. Refinar el backlog y realizar la reunión diaria pertenecen a la fase de Implementación, junto con crear entregables. La retrospectiva de la versión existe, pero pertenece a la fase de Lanzamiento, junto con la entrega de los entregables; confundirla con la del sprint es la trampa. Confirmar historias de usuario pertenece a Planificar y estimar."
+   },
+   {
+    "text": "Un equipo no logra estimar la historia «Como técnico ambiental quiero recibir datos de calidad del aire del servicio externo de monitoreo, para emitir alertas». Nadie conoce ese servicio. Según Mike Cohn, tal como lo presenta el material de historias de usuario, selecciona las 3 razones por las que una historia puede no ser estimable.",
+    "opts": [
+     "La historia es demasiado grande.",
+     "Falta conocimiento funcional sobre lo que el usuario necesita.",
+     "Falta conocimiento técnico, lo que se resuelve con un spike de tiempo fijo.",
+     "La historia no tiene un boceto de pantalla.",
+     "El propietario del producto no asistió a la reunión diaria.",
+     "La historia se representó solo con su título."
+    ],
+    "correct": [
+     0,
+     1,
+     2
+    ],
+    "just": "Correctas: historia demasiado grande (se divide), falta de conocimiento funcional (más conversación con el usuario o el propietario del producto) y falta de conocimiento técnico (se investiga con un spike), las tres razones de Cohn. En el escenario, la causa es técnica, porque nadie conoce el servicio externo. La falta de boceto no impide estimar: el boceto es opcional en varios modos de representación. La ausencia del propietario del producto en la reunión diaria no es una de las razones. Representar la historia solo con su título es un modo válido para equipos de madurez alta, no una causa de no poder estimar."
+   },
+   {
+    "text": "Un Agile Coach audita a un equipo y encuentra varios síntomas. Selecciona las 3 que el material de historias de usuario lista como disfunciones de un equipo.",
+    "opts": [
+     "La mayoría de las historias llega a «Terminado» apenas unas horas antes de la revisión del sprint.",
+     "Hay historias que sobreviven a una o más iteraciones.",
+     "La estimación de algunas historias se estableció por decreto y no por consenso.",
+     "Los criterios de aceptación se escriben con el formato Dado/Cuando/Entonces.",
+     "Una historia grande se dividió por variaciones de plataforma (iOS y Android).",
+     "Las historias se mantienen en listas que se reordenan con facilidad."
+    ],
+    "correct": [
+     0,
+     1,
+     2
+    ],
+    "just": "Correctas: historias que llegan a «Terminado» horas antes de la revisión, historias que sobreviven iteraciones y estimaciones por decreto; las tres figuran entre las seis disfunciones del material (las otras son iteraciones con muy pocas historias, partes no negociables y criterios de aceptación que son otras historias). Los criterios en formato Dado/Cuando/Entonces son una buena práctica (BDD o Gherkin). Dividir por variaciones de plataforma es uno de los patrones de división recomendados. Mantener las historias en listas fáciles de reordenar es una de sus características positivas."
+   },
+   {
+    "text": "Un equipo va a dividir una épica de pagos. Selecciona las 3 advertencias que el material de historias de usuario hace sobre la división de historias.",
+    "opts": [
+     "No retrases los requisitos no funcionales.",
+     "No dividas por componentes.",
+     "No dividas demasiado pronto.",
+     "Divide siempre por capas técnicas: interfaz, lógica y base de datos.",
+     "Deja las pruebas de la historia para después del sprint.",
+     "Divide la historia en tantas partes como sea posible, aunque pierdan valor."
+    ],
+    "correct": [
+     0,
+     1,
+     2
+    ],
+    "just": "Correctas: no retrasar los requisitos no funcionales, no dividir por componentes y no dividir demasiado pronto, que junto con «no dividas más de la cuenta» y «no olvides las pruebas» forman las advertencias del material. Dividir siempre por capas técnicas es dividir por componentes, justo lo que se desaconseja porque produce partes sin valor para el usuario. Dejar las pruebas para después contradice «no olvides las pruebas de la historia». Dividir en tantas partes como sea posible contradice «no dividas más de la cuenta» y el atributo valiosa de INVEST."
+   },
+   {
+    "text": "El propietario del producto pregunta cuándo puede dar por terminada una historia de usuario. Selecciona las 4 condiciones que el material de historias de usuario exige.",
+    "opts": [
+     "Cumple los aspectos funcionales.",
+     "Cumple los criterios de aceptación y sus pruebas, manuales o automatizadas.",
+     "Está desplegada y funcionando en un ambiente determinado.",
+     "Fue probada por el equipo y aceptada por el propietario del producto.",
+     "Fue aprobada por el Scrum Master en la reunión diaria.",
+     "Está documentada en formato IEEE 830."
+    ],
+    "correct": [
+     0,
+     1,
+     2,
+     3
+    ],
+    "just": "Correctas: funciones, condiciones (criterios de aceptación y pruebas), despliegue y aceptación (probada por el equipo y aceptada por el propietario del producto), las cuatro condiciones del material para que una historia se considere finalizada. La aprobación del Scrum Master en la reunión diaria no es una condición: la aceptación corresponde al propietario del producto, y la reunión diaria es para el progreso y los impedimentos. La documentación en IEEE 830 no es requisito; además, el curso trabaja con historias de usuario y criterios Gherkin."
+   },
+   {
+    "text": "Un banco retrasa sistemáticamente la aprobación de pantallas por sus procesos internos de cumplimiento normativo. El equipo decide integrar la gestión de este riesgo externo en las ceremonias de Scrum, como propone el material de Administración de Riesgos. Selecciona las 2 asociaciones ceremonia-actividad correctas.",
+    "opts": [
+     "Reunión diaria: reporte diario de bloqueos externos.",
+     "Revisión del sprint: evaluación del impacto de los factores externos en el incremento entregado.",
+     "Retrospectiva: identificación de los riesgos asociados a los ítems del sprint.",
+     "Planificación del sprint: mejora continua en la interacción con el cliente.",
+     "Reunión diaria: aprobación del incremento por parte del cliente."
+    ],
+    "correct": [
+     0,
+     1
+    ],
+    "just": "Correctas: la reunión diaria para reportar bloqueos externos y la revisión del sprint para evaluar el impacto de factores externos en el incremento, tal como aparecen en la lámina de integración en metodologías ágiles. La opción que pone en la retrospectiva la identificación de riesgos de los ítems intercambia actividades: eso corresponde a la planificación del sprint. La que pone en la planificación la mejora de la interacción con el cliente también intercambia: eso corresponde a la retrospectiva. La aprobación del incremento no ocurre en la reunión diaria."
+   },
+   {
+    "text": "En un Pod, un integrante copia la lista real de pacientes del centro de salud, con nombres y diagnósticos, en una herramienta pública de IA para generar el modelo de dominio. Días después, en la revisión, nadie puede explicar de dónde salió una clase del diagrama ni quién la aprobó. Según la lámina de riesgos propios de la IA del Bloque 4, selecciona los 2 riesgos que se materializaron.",
+    "opts": [
+     "Fuga de datos sensibles.",
+     "Falta de trazabilidad.",
+     "Sesgo en los datos.",
+     "Alucinación en artefactos.",
+     "Descontextualización por conectividad 2G."
+    ],
+    "correct": [
+     0,
+     1
+    ],
+    "just": "Correctas: fuga de datos sensibles (cargar información privada en una herramienta de IA) y falta de trazabilidad (nadie sabe de dónde salió una decisión). El sesgo en los datos implica que el sistema aprenda a discriminar, y el escenario no lo muestra. La alucinación sería un artefacto que suena bien pero no corresponde; aquí el problema es que se desconoce su origen, no que se sepa que es falso. La descontextualización por 2G es un riesgo real, pero del Bloque 2 y no describe lo ocurrido."
+   }
+  ]
+ },
+ {
+  "id": 2,
+  "title": "Requerimientos y modelado UML",
+  "icon": "🧩",
+  "color": "teal",
+  "type": "dragdrop",
+  "desc": "Tipos y fuentes de requisitos, elicitación, especificación, historias de usuario y modelado UML del MVP -- completa cada enunciado con el término correcto",
+  "questions": [
+   {
+    "before": "En el sistema de alerta de incendios, la regla «solo se atienden escuelas públicas de la región» no dice qué hace el sistema ni cómo se comporta, sino que expresa una regla del negocio; por eso es un requisito ",
+    "after": ".",
+    "correct": "de dominio",
+    "just": "El material clasifica los requisitos en funcionales (qué hace el sistema), no funcionales (cómo se comporta) y de dominio (reglas del negocio), y usa justamente «solo escuelas públicas de la región» como ejemplo de requisito de dominio. No es funcional, porque no describe una acción del sistema, ni no funcional, porque no expresa un atributo de desempeño o disponibilidad."
+   },
+   {
+    "before": "La especificación «la alerta debe llegar en menos de 2 minutos, con una disponibilidad del 99,5 %» describe cómo se comporta el sistema, no qué hace; por lo tanto, es un requisito ",
+    "after": ".",
+    "correct": "no funcional",
+    "just": "El ejemplo aparece literalmente en la tabla de tipos de requisitos como requisito no funcional: expresa tiempo de respuesta y disponibilidad. Un requisito funcional describiría una acción («detectar humo y enviar una alerta SMS») y uno de dominio, una regla del negocio."
+   },
+   {
+    "before": "Según el material, cambiar un requisito en papel cuesta alrededor de $100, en diseño $1.000 y en código $10.000 o más; por eso la ingeniería de requerimientos es la etapa más ",
+    "after": " para corregir errores.",
+    "correct": "barata",
+    "just": "La diapositiva inicial del Bloque 2 pregunta por qué es la etapa más barata para corregir errores y lo muestra con la escala de costos: papel, diseño, código y, en producción, pérdida de confianza y daño. El costo crece en cada etapa posterior, así que corregir durante la especificación es lo más económico."
+   },
+   {
+    "before": "Si un requisito no proviene de una fuente verificable (una entrevista, un documento, datos reales, la observación o una ley), el material advierte que no es un requisito, sino un ",
+    "after": ".",
+    "correct": "deseo",
+    "just": "La diapositiva «Fuentes para el análisis» cierra con la advertencia de no inventar requisitos: si no vienen de una fuente verificable, son un deseo. La idea clave final del bloque lo refuerza: un requisito que no se puede rastrear hasta una necesidad real y verificar después es un deseo."
+   },
+   {
+    "before": "Para descubrir requisitos tácitos que el usuario no sabe expresar en una entrevista, el Pod le muestra mockups de pantallas y observa sus reacciones; está aplicando la técnica de ",
+    "after": ".",
+    "correct": "prototipado",
+    "just": "El material define el prototipado como mostrar mockups para validar requisitos tácitos. Se diferencia de la entrevista (preguntas abiertas y cerradas 1:1), de la observación (seguir el flujo actual sin interrumpir) y del análisis de documentos (procesos, formularios, normas)."
+   },
+   {
+    "before": "El Pod acompaña durante una jornada completa al personal de un centro de salud y sigue su flujo de trabajo actual sin interrumpirlo ni hacer preguntas; la técnica de elicitación que aplica es la ",
+    "after": ".",
+    "correct": "observación",
+    "just": "El material describe la observación como seguir el flujo de trabajo actual sin interrumpir. No es una entrevista, porque no hay preguntas, ni prototipado, porque no se muestran mockups. Como fuente de análisis, el material también menciona la observación directa de cómo se trabaja hoy sin el sistema."
+   },
+   {
+    "before": "El artículo 33 de la CPE (derecho a un medio ambiente saludable) y la Ley 300 de la Madre Tierra son ejemplos de la fuente de requisitos que el material denomina ",
+    "after": ".",
+    "correct": "legislación",
+    "just": "Entre las fuentes para el análisis, el material lista stakeholders, documentos existentes, datos reales, observación directa y legislación, y cita como ejemplos de esta última el artículo 33 de la CPE y la Ley 300. Aunque un decreto también puede ser un documento existente, la CPE y la Ley 300 son el ejemplo explícito de legislación."
+   },
+   {
+    "before": "En este curso, los criterios de aceptación de las historias de usuario se escriben con la estructura Dado / Cuando / Entonces, conocida como formato ",
+    "after": ".",
+    "correct": "Gherkin",
+    "just": "La diapositiva «Especificar bien: dos enfoques» indica que las historias de usuario usan criterios en formato Dado/Cuando/Entonces (Gherkin), y que en el curso se trabaja con historias de usuario, criterios Gherkin y matriz de trazabilidad. IEEE 830 es el enfoque formal, con criterios explícitos, pero no usa esa estructura."
+   },
+   {
+    "before": "En la priorización MoSCoW, un requisito sin el cual el MVP simplemente no funciona se clasifica como ",
+    "after": ".",
+    "correct": "Must",
+    "just": "El material define Must como crítico: sin esto el MVP no funciona. Should y Could agrupan lo importante que puede esperar, y la última categoría reúne lo que queda fuera del alcance de manera deliberada."
+   },
+   {
+    "before": "El requisito de sostenibilidad «funciona con conectividad 2G, sin dependencia de la nube» pertenece a la categoría de ",
+    "after": ".",
+    "correct": "accesibilidad",
+    "just": "En la diapositiva de requisitos de sostenibilidad, este ejemplo figura como accesibilidad. Las otras categorías del material son eficiencia de cómputo (menos de 2 MB de RAM por instancia), trazabilidad (quién, cuándo y por qué), auditoría (log inmutable) y privacidad (datos de poblaciones vulnerables protegidos)."
+   },
+   {
+    "before": "En AI-DLC, el taller colaborativo en el que participan el AI Pod, la IA y el stakeholder para extraer requisitos se denomina ",
+    "after": ".",
+    "correct": "mob elaboration",
+    "just": "El material presenta los talleres colaborativos como mob elaboration (AI Pod, IA y stakeholder) y aclara que, en AI-DLC, la IA sugiere preguntas y resume respuestas mientras el equipo dirige la sesión. El cierre del Bloque 1 también equipara la fase Inception con la mob elaboration."
+   },
+   {
+    "before": "UML unificó en una notación común las propuestas de Booch, Rumbaugh y Jacobson; aun así, el Bloque 3 insiste en que UML es un ",
+    "after": ", no una metodología: dice cómo dibujar, pero no en qué orden trabajar.",
+    "correct": "lenguaje",
+    "just": "El Bloque 3 compara OMT con UML y concluye que UML es un lenguaje, no una metodología. Confundirlo con un proceso lleva a creer que dibujar los diagramas equivale a seguir un método de desarrollo; el orden del trabajo lo da el proceso del curso (AI-DLC), no UML."
+   },
+   {
+    "before": "En el diagrama de clases, cuando una parte vive y muere con el todo (por ejemplo, las líneas de detalle de un reporte de foco que no existen sin el reporte), la relación adecuada es la ",
+    "after": ".",
+    "correct": "composición",
+    "just": "El Bloque 3 define la composición como una relación parte-de en la que la parte vive y muere con el todo. Se distingue de la agregación, que también es parte-de, pero con vida independiente, y de la herencia, que expresa una relación «es-un»."
+   },
+   {
+    "before": "Una brigada puede formar parte de un operativo regional, pero sigue existiendo cuando el operativo termina; esa relación parte-de con vida independiente se modela como ",
+    "after": ".",
+    "correct": "agregación",
+    "just": "El Bloque 3 define la agregación como una relación parte-de con vida independiente. Si la brigada desapareciera al cerrarse el operativo, sería composición. No es herencia, porque una brigada no «es un» operativo."
+   },
+   {
+    "before": "Para modelar el ciclo de vida de una denuncia ambiental (registrada, en revisión, derivada, cerrada), el Bloque 3 recomienda, según haga falta, el ",
+    "after": ".",
+    "correct": "diagrama de estados",
+    "just": "El Bloque 3 indica que el diagrama de estados muestra el ciclo de vida de un objeto y usa como ejemplo una denuncia. El de secuencia muestra cómo colaboran objetos en un flujo; el de actividades, un proceso; y el de componentes o despliegue, la arquitectura física."
+   },
+   {
+    "before": "Las clases conceptuales ReporteDeFoco y Brigada, con sus atributos y la relación «asignada a», todavía no son clases del software sino sustantivos del problema; forman el ",
+    "after": ", uno de los tres modelos obligatorios del MVP.",
+    "correct": "modelo de dominio",
+    "just": "El Bloque 3 llama modelo del dominio del problema a las clases conceptuales (sustantivos, atributos y relaciones del dominio) y lo incluye entre los obligatorios del MVP junto con los casos de uso y el diagrama de clases. El diagrama de clases viene después: pasa de conceptos a clases de software con responsabilidades y agrega servicios o repositorios que el dominio no tenía."
+   },
+   {
+    "before": "En el diccionario de casos de uso, cada caso se documenta con actor, precondición, flujo principal, flujos alternativos y ",
+    "after": ", y cada paso se enlaza con los RF o RNF que lo sostienen.",
+    "correct": "postcondición",
+    "just": "El Bloque 3 lista esos cinco elementos para el diccionario de casos de uso. La postcondición describe el estado en que queda el sistema al terminar el caso, y es lo que convierte el diagrama en una especificación verificable."
+   },
+   {
+    "before": "Según la regla de coherencia SRS ↔ modelos del Bloque 3, cada requisito del SRS debe llegar a un caso de uso y a una ",
+    "after": "; si no llega, el requisito falta o sobra.",
+    "correct": "clase",
+    "just": "La lámina de coherencia muestra la cadena requisito, caso de uso y clase. Un requisito sin caso de uso ni clase indica que falta modelarlo o que sobra en el SRS. En el Bloque 4, la cadena se extiende hasta el plan de despliegue."
+   },
+   {
+    "before": "En el diagrama de casos de uso del despachador, el recuadro que marca qué queda dentro y qué queda fuera del sistema se llama ",
+    "after": ".",
+    "correct": "límite del sistema",
+    "just": "El Bloque 3 explica que el actor es quien usa el sistema, el caso de uso es un objetivo que el sistema le ayuda a cumplir, y el recuadro marca el límite del sistema. Dibujar un actor dentro de ese recuadro es un error típico: los actores quedan fuera."
+   },
+   {
+    "before": "En el modelo INVEST, el atributo que el material de historias de usuario señala como el más importante es el de ser ",
+    "after": " para el producto y para los consumidores.",
+    "correct": "valiosa",
+    "just": "El material afirma que el valor es el atributo más importante de INVEST: cada historia debe aportar el mayor valor posible, y quien mejor lo conoce es el usuario, representado por el propietario del producto. Por eso se desaconseja dividir historias en partes sin valor."
+   },
+   {
+    "before": "Cuando el equipo no puede estimar una historia por falta de conocimiento técnico, reserva un espacio de tiempo fijo para investigar, conocido como ",
+    "after": ".",
+    "correct": "spike",
+    "just": "Mike Cohn, citado en el material, propone el spike para el caso de falta de conocimiento técnico. Si la historia es demasiado grande, se divide; si falta conocimiento funcional, se conversa más con el usuario o el propietario del producto."
+   },
+   {
+    "before": "En 2001, Ron Jeffries propuso el modelo de Carta, Conversación y ",
+    "after": " para distinguir las historias de usuario «sociales» de las prácticas documentales de requisitos.",
+    "correct": "Confirmación",
+    "just": "Las tres C de Jeffries, que el material presenta en la historia de las historias de usuario, son Carta, Conversación y Confirmación. La confirmación corresponde a los criterios de aceptación que permiten verificar la historia; la conversación es la parte que el material considera más importante."
+   },
+   {
+    "before": "La historia «Como cliente del banco quiero realizar una transferencia bancaria» abarca cuentas propias y de terceros, otros bancos y transferencias programadas; no cumple la S de INVEST, por lo que se la trata como una ",
+    "after": " que debe dividirse.",
+    "correct": "épica",
+    "just": "El material de historias de usuario usa este mismo ejemplo para mostrar el paso de épica a historias: la historia inicial no es pequeña y se divide aplicando patrones como múltiples operaciones, variedad de reglas de negocio o núcleo simple de mayor valor."
+   },
+   {
+    "before": "En el mapa antes de programar del material de SDLC, el artefacto que responde «qué producto y por qué», y que se redacta antes del SRS, es el ",
+    "after": ".",
+    "correct": "PRD",
+    "just": "El mapa sigue la secuencia necesidad, PRD (qué producto y por qué), SRS (qué debe hacer el sistema), arquitectura, Release Plan y, recién al final, implementación. El PRD incluye problema, objetivo medible, usuarios, alcance inicial, restricciones y criterios de éxito."
+   }
+  ]
+ },
+ {
+  "id": 3,
+  "title": "Gestión, riesgos y gobernanza",
+  "icon": "⚖️",
+  "color": "green",
+  "type": "truefalse",
+  "desc": "Verificación y validación, trazabilidad, gestión de riesgos (PMBOK, Boehm, Pressman), viabilidad, métricas de gobierno y condición de terminado",
+  "questions": [
+   {
+    "text": "La verificación de requisitos responde a la pregunta «¿escribimos lo que necesitan?» y la realiza el stakeholder, que revisa y aprueba que los requisitos reflejen su realidad.",
+    "correct": false,
+    "just": "Es falso porque invierte los conceptos. La verificación pregunta «¿lo escribimos bien?» (cada requisito es claro, no ambiguo y trazable) y la realiza el equipo interno, los Pods. La pregunta «¿escribimos lo que necesitan?» corresponde a la validación, que la hacen el cliente, el usuario final o el jefe de área."
+   },
+   {
+    "text": "La validación de requisitos la realizan el cliente, el usuario final o el jefe de área, quienes revisan y aprueban que los requisitos reflejen su realidad.",
+    "correct": true,
+    "just": "Es verdadero: la diapositiva «Verificación vs. validación» asigna la validación al cliente, usuario final o jefe de área, y la describe como la revisión y aprobación de que los requisitos reflejan su realidad. En la Actividad 2 se documenta como una sesión de validación con el stakeholder."
+   },
+   {
+    "text": "En AI-DLC, una Unit of Work (UoW) consiste en una historia de usuario con 2 o 3 criterios de aceptación y debe poder consumirse en 2 a 4 horas.",
+    "correct": true,
+    "just": "Es verdadero: es la definición literal de la diapositiva «AI-DLC: Units of Work pequeñas». Su tamaño reducido encaja con la cadencia por bolts (ciclos de horas) del Bloque 1."
+   },
+   {
+    "text": "Según el flujo de Inception presentado en el material, primero la IA plantea el problema, luego el Product Owner formula las preguntas y, al final, la IA aprueba los requisitos.",
+    "correct": false,
+    "just": "Es falso: el flujo es el inverso en sus roles. El PO plantea el problema, la IA formula preguntas, se realiza la sesión mob y el equipo revisa y aprueba. El material insiste en que la IA no decide: genera borradores plausibles que requieren validación humana en cada paso."
+   },
+   {
+    "text": "En el material del curso, las siglas SMART de un buen requisito corresponden a Específico, Medible, Alcanzable, Realista y Temporal.",
+    "correct": false,
+    "just": "Es falso para este curso. Aunque en otros textos es común esa versión, el material define SMART como Específico, Medible, Asignable, Realista y Trazable, y agrega que el requisito debe ser no ambiguo, verificable, trazable y priorizado con MoSCoW. La trampa está en usar la versión genérica en lugar de la del curso."
+   },
+   {
+    "text": "El requisito «el sistema debe enviar las alertas de forma rápida» cumple el atributo de no ambigüedad, siempre que todo el equipo entienda lo mismo por «rápida».",
+    "correct": false,
+    "just": "Es falso: el material ilustra la ambigüedad justamente con «rápido» ≠ «<2 minutos». Un requisito no ambiguo usa una medida concreta que luego se pueda verificar (sí o no), no un acuerdo tácito del equipo, que además no es verificable ni trazable."
+   },
+   {
+    "text": "La matriz de trazabilidad crece en cada bloque del curso, de modo que un requisito se vincula luego con un caso de uso, después con una clase y, finalmente, con un plan.",
+    "correct": true,
+    "just": "Es verdadero: la diapositiva de la matriz lo dice explícitamente (requisito, caso de uso, clase, plan) y la presenta como el hilo conductor intención, requisito, código y prueba, es decir, trazabilidad de extremo a extremo."
+   },
+   {
+    "text": "Si un asistente de IA redacta «la Ley 070 establece que el sistema debe...» y la ley no dice eso, el material clasifica este error como un sesgo del entrenamiento.",
+    "correct": false,
+    "just": "Es falso: el material usa precisamente el ejemplo de la Ley 070 para ilustrar la alucinación (la IA inventa requisitos plausibles pero falsos). El sesgo es otro riesgo distinto: la IA absorbe sesgos del entrenamiento, por ejemplo, invisibilizando poblaciones indígenas."
+   },
+   {
+    "text": "Como gate obligatorio antes de pasar al Bloque 3, el Product Owner debe validar cada requisito con al menos un stakeholder real.",
+    "correct": true,
+    "just": "Es verdadero: es el gate obligatorio que cierra la diapositiva «Riesgo: delegación acrítica». Su propósito es contrarrestar la alucinación, el sesgo, la descontextualización y la falta de intención de los borradores generados por IA."
+   },
+   {
+    "text": "Según la regla de oro de AI-DLC, la IA es un redactor rápido y no un estratega: el equipo valida, decide y firma.",
+    "correct": true,
+    "just": "Es verdadero: reproduce la regla de oro del material. La ventaja de la IA es la velocidad de síntesis y el cumplimiento de estándares (IEEE, Gherkin), pero la estrategia y la responsabilidad siguen siendo humanas."
+   },
+   {
+    "text": "Un requisito generado por IA que supone conexión permanente a la nube para comunidades rurales con cobertura 2G es un ejemplo del riesgo que el material llama descontextualización.",
+    "correct": true,
+    "just": "Es verdadero: el material define la descontextualización como el desconocimiento de la realidad local por parte de la IA y usa como ejemplos la conectividad 2G y la informalidad del 86 %. Por eso la accesibilidad en 2G, sin dependencia de la nube, aparece entre los requisitos de sostenibilidad."
+   },
+   {
+    "text": "La matriz de trazabilidad solo sirve para la auditoría final del proyecto; no aporta al control de cambios cuando, por ejemplo, se modifica una ley.",
+    "correct": false,
+    "just": "Es falso: el material enumera tres beneficios de la matriz: transparencia (seguir un requisito de ida y vuelta), control de cambios (si cambia la ley, saber qué requisitos se ven afectados) y auditoría (en una defensa, el panel elige un requisito y lo sigue hasta el código). Restringirla a la auditoría ignora los otros dos."
+   },
+   {
+    "text": "En este curso, los requisitos se especifican exclusivamente con el formato formal IEEE 830, sin historias de usuario.",
+    "correct": false,
+    "just": "Es falso: el material compara IEEE 830 (formal) con las historias de usuario (ágil) y aclara que en este curso se trabaja con historias de usuario, criterios de aceptación Gherkin y matriz de trazabilidad. El SRS de la Actividad 2 se acota al MVP, pero el enfoque de especificación del curso son las historias de usuario."
+   },
+   {
+    "text": "Según la definición del PMBOK 7 que presenta el material de Administración de Riesgos, un riesgo es exclusivamente un evento negativo que puede afectar los objetivos del proyecto.",
+    "correct": false,
+    "just": "Es falso: el PMBOK 7 define el riesgo como una incertidumbre que, si ocurre, tiene un efecto positivo o negativo en uno o más objetivos del proyecto, y el material aclara que también puede representar oportunidades. La SBOK coincide: a los riesgos de impacto positivo los llama oportunidades y a los negativos, amenazas."
+   },
+   {
+    "text": "Si un riesgo tiene una probabilidad de 0,80 y el costo del proyecto, en caso de que ocurra, es de 25.200, su exposición al riesgo según Pressman (ER = P × C) es de 20.160.",
+    "correct": true,
+    "just": "Es verdadero: Pressman define la exposición al riesgo como ER = P × C, donde P es la probabilidad y C el costo si el riesgo ocurre; 0,80 × 25.200 = 20.160, que es el ejemplo del propio libro. La trampa sería sumar o promediar los factores en lugar de multiplicarlos."
+   },
+   {
+    "text": "Pressman recomienda evaluar la viabilidad del proyecto cuando la exposición al riesgo total supera el 50 % del costo estimado del proyecto.",
+    "correct": true,
+    "just": "Es verdadero: Pressman sugiere comparar la exposición al riesgo de todos los riesgos con el costo estimado, y si supera el 50 %, evaluar la viabilidad del proyecto. Conecta con el Gate 1 del material de SDLC (objetivo y viabilidad) y con el estudio de viabilidad técnica, económica y operativa del Bloque 4."
+   },
+   {
+    "text": "La estrategia proactiva de gestión de riesgos, según Pressman, comienza cuando aparece el primer problema serio y consiste en movilizar al equipo para corregirlo rápidamente.",
+    "correct": false,
+    "just": "Es falso: eso describe la estrategia reactiva, que Pressman caricaturiza como la «escuela de Indiana Jones» o el método «de bomberos». La estrategia proactiva empieza mucho antes de los trabajos técnicos: identifica riesgos, evalúa su probabilidad e impacto, los prioriza y establece un plan para evitarlos o, si no se puede, un plan de contingencia."
+   },
+   {
+    "text": "Para Pressman, un «riesgo» con 100 % de probabilidad ya no es un riesgo, sino una limitación del proyecto.",
+    "correct": true,
+    "just": "Es verdadero: Pressman indica que todo riesgo implica incertidumbre (puede o no ocurrir) y pérdida, y aclara en nota que un riesgo del 100 % es una limitación del proyecto de software. Sin incertidumbre no hay riesgo, sino una condición que el plan debe asumir desde el inicio."
+   },
+   {
+    "text": "Construir un sistema de apoyo a la decisión técnicamente excelente que ninguna institución quiere usar es, según Pressman, un ejemplo de riesgo técnico.",
+    "correct": false,
+    "just": "Es falso: Pressman lo clasifica como riesgo del negocio, específicamente riesgo de mercado (construir un producto excelente que nadie quiere). Los riesgos técnicos amenazan la calidad y la planificación temporal por problemas de diseño, implementación, interfaz, verificación o mantenimiento. Conecta con la viabilidad operativa del Bloque 4: si la organización no lo va a usar, el sistema no se justifica."
+   },
+   {
+    "text": "En el caso de estudio del banco que presenta el material de Administración de Riesgos, el retraso acumulado se debió a un riesgo técnico por el uso de una tecnología móvil nueva.",
+    "correct": false,
+    "just": "Es falso: el retraso se debió a un riesgo externo, porque el cliente demoraba sistemáticamente la aprobación de interfaces por sus procesos internos de cumplimiento normativo. El impacto fue de tres sprints de retraso y un 20 % más de costos, y la solución combinó un acuerdo de nivel de servicio de feedback de 72 horas, reuniones semanales de alineación y una reserva de una semana por sprint para imprevistos externos."
+   },
+   {
+    "text": "Reservar una semana por sprint para absorber imprevistos externos, como hizo el equipo del caso del banco, es un ejemplo de los «buffers de contingencia en la planificación» que el material propone para los riesgos externos.",
+    "correct": true,
+    "just": "Es verdadero: entre las estrategias para riesgos externos, el material lista contratos ágiles con revisión periódica, acuerdos de nivel de servicio para las respuestas del cliente, una Definition of Ready que incluya la aprobación del cliente, buffers de contingencia en la planificación y comunicación escalonada. La reserva de una semana por sprint es el buffer aplicado en el caso."
+   },
+   {
+    "text": "La priorización del backlog ajustada al riesgo que muestra el material propone atender primero los ítems de alto valor y bajo riesgo, dejando para más adelante los de alto valor y alto riesgo.",
+    "correct": false,
+    "just": "Es falso: en la matriz valor-riesgo del material, el orden es 1) alto valor y alto riesgo, 2) alto valor y bajo riesgo, 3) bajo valor y bajo riesgo, mientras que los de alto riesgo y bajo valor se señalan para evitar. Atacar temprano lo valioso y riesgoso reduce la incertidumbre cuando todavía hay margen para reaccionar, en coherencia con la estrategia proactiva de Pressman."
+   },
+   {
+    "text": "Según las conclusiones del material de Administración de Riesgos, las metodologías ágiles no eliminan los riesgos, pero proporcionan mecanismos para hacerlos visibles y gestionables.",
+    "correct": true,
+    "just": "Es verdadero: es una de las conclusiones del material, que además afirma que los riesgos externos requieren tanta atención como los internos, y que la gestión de riesgos es una competencia central del ingeniero, no un complemento opcional. Creer que Scrum «elimina» el riesgo es una generalización que el material descarta."
+   },
+   {
+    "text": "En el tablero de métricas de gobierno del Bloque 4, la cantidad de commits y las líneas de código son buenos indicadores de si el equipo puede entregar y recuperarse con confianza.",
+    "correct": false,
+    "just": "Es falso: el Bloque 4 las clasifica como métricas de vanidad, junto con las visitas totales sin contexto. Las métricas de gobierno que sí sirven son el tiempo medio de despliegue, el tiempo medio de recuperación (MTTR), el porcentaje de despliegues fallidos, la deuda técnica y la cobertura de trazabilidad, porque responden a «¿podemos entregar y recuperarnos con confianza?»."
+   },
+   {
+    "text": "En el estudio de viabilidad del Bloque 4, la pregunta «¿la organización va a poder usarlo y mantenerlo de verdad?» corresponde a la viabilidad económica.",
+    "correct": false,
+    "just": "Es falso: corresponde a la viabilidad operativa. La económica pregunta si el costo de construirlo y operarlo se justifica frente al beneficio, y la técnica, si el equipo y la tecnología disponibles alcanzan. Las tres aparecen también en la etapa de planificación del material de SDLC."
+   },
+   {
+    "text": "El Bloque 4 sostiene que el análisis costo/beneficio clásico debe incorporar una columna socioambiental no financiera, porque un sistema puede no convenir en dinero y sí convenir en vidas, tiempo y territorio.",
+    "correct": true,
+    "just": "Es verdadero: la lámina «Costo/beneficio: falta una columna» agrega indicadores como hectáreas monitoreables, esperas evitadas, toneladas con trazabilidad y huella de cómputo, y convierte el indicador del título de cada Pod en criterio de decisión."
+   },
+   {
+    "text": "Según la idea clave del Bloque 4, un sistema que ya está en producción y funciona se considera terminado aunque no se pueda medir, auditar ni explicar.",
+    "correct": false,
+    "just": "Es falso: la idea clave dice exactamente lo contrario: un sistema que no se puede medir, auditar ni explicar no está terminado, aunque esté en producción. Es coherente con «el go-live no es el final» y con la función de la trazabilidad como condición de auditoría y gobernanza."
+   },
+   {
+    "text": "En Ingeniería de Software I, cada Pod debe implementar la infraestructura como código, los pipelines de CI/CD y los agentes de IA que vigilan producción, como parte de su entrega.",
+    "correct": false,
+    "just": "Es falso: el Bloque 4 aclara que en Ingeniería de Software I el despliegue automatizado y el monitoreo con IA se planifican y documentan, pero no se implementan; entran en el Documento de Gestión del Proyecto. El paquete del Pod es de análisis y diseño (SRS, Álbum de modelos UML y Documento de Gestión), no código."
+   },
+   {
+    "text": "La trazabilidad desde la intención de negocio, pasando por el requisito y el caso de uso con su clase, hasta el plan de despliegue, es según el Bloque 4 la condición técnica de la transparencia asociada al ODS 16.6 (instituciones responsables).",
+    "correct": true,
+    "just": "Es verdadero: la lámina «Trazabilidad = auditoría y gobernanza» presenta esa cadena y la vincula con el ODS 16.6. Es la misma matriz del Bloque 2 que crece en cada bloque, y la que el panel recorre en vivo durante la defensa."
+   },
+   {
+    "text": "Para aprobar la materia, basta con que la suma de las tres matrices alcance al menos 51 puntos, aunque una de ellas quede en el nivel receptivo.",
+    "correct": false,
+    "just": "Es falso: el encuadre del curso exige como mínimo de aprobación el nivel resolutivo en las tres matrices (Matriz 1, análisis de requerimientos, 30 puntos; Matriz 2, modelado UML, 40; Matriz 3, gestión del desarrollo, 30). El rango de 51 a 69 corresponde al nivel resolutivo de la escala, pero no se puede compensar una matriz receptiva con las otras dos."
+   },
+   {
+    "text": "En el Bloque 4, la WBS descompone el proyecto en entregables y tareas, y de ella se derivan los hitos, las dependencias y el cronograma.",
+    "correct": true,
+    "just": "Es verdadero: la lámina de planificación muestra la WBS con entregables como SRS, Álbum UML, Plan de gestión y Defensa, y afirma que de ella salen hitos, dependencias y cronograma. Planificar (alcance, tiempo y recursos) es la primera de las actividades de la gestión que lista el bloque."
+   },
+   {
+    "text": "Según la taxonomía presentada en el material de Administración de Riesgos, las demoras del cliente en dar feedback y los cambios tardíos de requisitos son riesgos organizacionales.",
+    "correct": false,
+    "just": "Es falso: el material los ubica como riesgos externos, junto con las dependencias de sistemas o proveedores externos y las restricciones regulatorias. Los organizacionales son los cambios de prioridad interna y la resistencia al cambio; los técnicos, los cambios tecnológicos y errores críticos; y los de gestión, las estimaciones erróneas y la mala asignación de recursos."
+   },
+   {
+    "text": "Para Pressman, riesgos como el cambio de personal o la mala comunicación con el cliente, que se extrapolan de la experiencia en proyectos anteriores, son riesgos predecibles.",
+    "correct": true,
+    "just": "Es verdadero: Pressman distingue riesgos conocidos (descubiertos al evaluar el plan, como fechas poco realistas o falta de especificación), predecibles (extrapolados de proyectos anteriores, como cambio de personal o mala comunicación con el cliente) e impredecibles (el «comodín de la baraja», muy difíciles de identificar por adelantado)."
+   }
+  ]
+ }
+];
+
+
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+const QUESTIONS_PER_SECTION = 8; // preguntas mostradas por bloque en cada intento (se sortean de un pool más grande)
+const TOTAL_QUESTIONS = QUESTIONS_PER_SECTION * 4; // debe coincidir con el número de objetos en SECTIONS
+const EXAM_SECONDS = 90*60;
+const LOCK_STORAGE_KEY = 'upds_sis0325_final_2026'; // clave única de localStorage: distinta por cada examen/materia para no chocar con otros exámenes abiertos en el mismo navegador
+
+function buildActiveSection(sec) {
+  const s = JSON.parse(JSON.stringify(sec));
+  // Banco de preguntas ampliado: se toma una muestra aleatoria de N preguntas
+  // del pool completo de la sección en cada intento, para que el examen
+  // varie entre estudiantes e intentos.
+  const n = Math.min(QUESTIONS_PER_SECTION, s.questions.length);
+  s.questions = shuffle(s.questions).slice(0, n);
+  if (s.type === 'multiple') {
+    s.questions = s.questions.map(q => {
+      const indexed = q.opts.map((opt, i) => ({ opt, i }));
+      const sh = shuffle(indexed);
+      const newCorrect = sh.findIndex(x => x.i === q.correct);
+      return { ...q, opts: sh.map(x => x.opt), correct: newCorrect };
+    });
+  } else if (s.type === 'multiselect') {
+    s.questions = s.questions.map(q => {
+      const indexed = q.opts.map((opt, i) => ({ opt, i }));
+      const sh = shuffle(indexed);
+      const correctSet = new Set(q.correct);
+      const newCorrect = sh.reduce((acc, x, ni) => { if (correctSet.has(x.i)) acc.push(ni); return acc; }, []);
+      return { ...q, opts: sh.map(x => x.opt), correct: newCorrect };
+    });
+  } else if (s.type === 'dragdrop') {
+    // El banco de palabras se construye dinamicamente a partir de las
+    // preguntas efectivamente seleccionadas en este intento (no de un
+    // listado estatico), para que coincida siempre 1 a 1 con los espacios
+    // en blanco mostrados.
+    s.bankWords = shuffle(s.questions.map(q => q.correct));
+  }
+  return s;
+}
+
+let ACTIVE_SECTIONS = [];
+
+const CLRS = {
+  blue:  {tab:'#007AFF', badge:'bg-blue-100 text-blue-700'},
+  purple:{tab:'#AF52DE', badge:'bg-purple-100 text-purple-700'},
+  green: {tab:'#34C759', badge:'bg-green-100 text-green-700'},
+  orange:{tab:'#FF9500', badge:'bg-orange-100 text-orange-700'},
+  teal:  {tab:'#5AC8FA', badge:'bg-cyan-100 text-cyan-700'},
+  red:   {tab:'#FF3B30', badge:'bg-red-100 text-red-700'},
+};
+
+let state = {
+  screen: 'intake',
+  student: null,
+  current: 0,
+  answers: null,
+  submitted: false,
+  seconds: EXAM_SECONDS,
+  timerInterval: null,
+  selectedChip: null,
+  consent: false,
+  lockRecord: null,
+  veriCode: null,
+  annulled: false,
+  annulReason: null,
+};
+
+function formatDateTimeLocal(date) {
+  const pad = n => String(n).padStart(2, '0');
+  return `${date.getFullYear()}-${pad(date.getMonth()+1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
+}
+
+function formatDateTimeForDisplay(value) {
+  const date = value ? new Date(value) : new Date();
+  return date.toLocaleString('es-BO', {dateStyle:'full', timeStyle:'short'});
+}
+
+// ---------- Mecanismo de bloqueo por correo: un intento por correo, registrado en este navegador ----------
+function normalizeEmail(e){ return (e||'').trim().toLowerCase(); }
+
+function getLocks(){
+  try {
+    const raw = localStorage.getItem(LOCK_STORAGE_KEY);
+    return raw ? JSON.parse(raw) : {};
+  } catch(err){ return {}; }
+}
+
+function saveLocks(locks){
+  try { localStorage.setItem(LOCK_STORAGE_KEY, JSON.stringify(locks)); } catch(err){}
+}
+
+function getLockForEmail(email){
+  const key = normalizeEmail(email);
+  if(!key) return null;
+  const locks = getLocks();
+  return locks[key] || null;
+}
+
+// Hash no criptografico (variante cyrb53) para generar un código de verificación corto y estable,
+// sin depender de crypto.subtle (bloqueado en algunos navegadores bajo file://).
+function simpleHash(str){
+  let h1 = 0xdeadbeef ^ str.length, h2 = 0x41c6ce57 ^ str.length;
+  for (let i=0;i<str.length;i++){
+    const ch = str.charCodeAt(i);
+    h1 = Math.imul(h1 ^ ch, 2654435761);
+    h2 = Math.imul(h2 ^ ch, 1597334677);
+  }
+  h1 = Math.imul(h1 ^ (h1>>>16), 2246822507) ^ Math.imul(h2 ^ (h2>>>13), 3266489909);
+  h2 = Math.imul(h2 ^ (h2>>>16), 2246822507) ^ Math.imul(h1 ^ (h1>>>13), 3266489909);
+  return 4294967296 * (2097151 & h2) + (h1>>>0);
+}
+
+function generateSubmissionCode(email, tsIso){
+  const raw = normalizeEmail(email) + '|' + tsIso;
+  const num = simpleHash(raw);
+  return 'ISW0325-' + num.toString(36).toUpperCase().slice(0,8);
+}
+
+function renderLockBanner(record){
+  const banner = document.getElementById('lock-banner');
+  if(!banner) return;
+  if(!record){ banner.style.display='none'; banner.innerHTML=''; return; }
+  banner.style.display='';
+  banner.className = 'mt-2 rounded-xl px-3 py-2.5 text-xs leading-relaxed bg-orange-50 border border-orange-300 text-orange-800';
+  banner.innerHTML = '<strong>&#128274; Este correo ya registró una respuesta</strong><br>Entregado el ' + record.submittedAtDisplay + ' &middot; Código: <strong>' + record.code + '</strong><br>Esa respuesta es tu nota final. Toca el botón de abajo para volver a verla.';
+}
+
+function handleStartClick(){
+  if(state.lockRecord){
+    loadLockedResult(state.lockRecord);
+  } else {
+    startExam();
+  }
+}
+
+function loadLockedResult(record){
+  ACTIVE_SECTIONS = record.activeSections;
+  state.student = record.student;
+  state.answers = record.answers;
+  state.submitted = true;
+  state.veriCode = record.code;
+  state.annulled = !!record.annulled;
+  state.annulReason = record.annulReason || null;
+  document.getElementById('intake-screen').style.display = 'none';
+  computeAndRenderResults();
+}
+
+function checkIntake() {
+  const n = document.getElementById('inp-nombre').value.trim();
+  const c = document.getElementById('inp-codigo').value.trim();
+  const eEl = document.getElementById('inp-email');
+  const e = eEl ? eEl.value.trim() : '';
+  // Validación permisiva: acepta cualquier texto con @ y al menos un punto después
+  const emailOk = e.length > 0 && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e);
+  const f = document.getElementById('inp-fecha').value;
+  const consentInput = document.getElementById('inp-consent');
+  state.consent = consentInput ? consentInput.checked : state.consent;
+
+  const lockRec = emailOk ? getLockForEmail(e) : null;
+  state.lockRecord = lockRec;
+  renderLockBanner(lockRec);
+
+  const btn = document.getElementById('btn-start');
+  if (!btn) return;
+
+  if (lockRec) {
+    // El correo ya entregó una respuesta: se habilita el botón únicamente para VER esa nota final.
+    btn.disabled = false;
+    btn.style.background = '#FF9500';
+    btn.style.color = '#fff';
+    btn.className = 'w-full py-4 rounded-2xl font-bold text-base transition-all active:scale-95 cursor-pointer shadow-md';
+    btn.textContent = 'Ver mi resultado ya registrado ▶';
+    return;
+  }
+
+  const ok = n && c && emailOk && f && state.consent;
+  if (ok) {
+    btn.disabled = false;
+    btn.style.background = '#007AFF';
+    btn.style.color = '#fff';
+    btn.className = 'w-full py-4 rounded-2xl font-bold text-base transition-all active:scale-95 cursor-pointer shadow-md';
+    btn.textContent = 'Comenzar Examen ▶';
+  } else {
+    btn.disabled = true;
+    btn.style.background = '';
+    btn.style.color = '';
+    btn.className = 'w-full py-4 rounded-2xl font-bold text-base bg-gray-200 text-gray-400 transition-all cursor-not-allowed';
+    btn.textContent = 'Completar todos los campos para continuar';
+  }
+}
+
+function toggleConsent(checked) {
+  state.consent = typeof checked === 'boolean' ? checked : !state.consent;
+  const input = document.getElementById('inp-consent');
+  if (input) input.checked = state.consent;
+  const box = document.getElementById('consent-box');
+  if (box) {
+    if (state.consent) {
+      box.style.background = '#007AFF';
+      box.style.borderColor = '#007AFF';
+      box.innerHTML = '<svg width="12" height="9" viewBox="0 0 12 9" fill="none"><path d="M1 4L4.5 7.5L11 1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+    } else {
+      box.style.background = '';
+      box.style.borderColor = '';
+      box.innerHTML = '';
+    }
+  }
+  checkIntake();
+}
+
+function initializeIntakeScreen() {
+  const intakeLogo = document.getElementById('intake-logo');
+  if (intakeLogo) intakeLogo.src = LOGO_DATA_URI;
+  const hdLogo = document.getElementById('hd-logo');
+  if (hdLogo) hdLogo.src = LOGO_DATA_URI;
+  document.getElementById('inp-fecha').value = formatDateTimeLocal(new Date());
+  checkIntake();
+  // Forzar re-evaluación después de que el browser procese todos los valores iniciales
+  setTimeout(checkIntake, 100);
+  var _poll = setInterval(function() {
+    var el = document.getElementById('intake-screen');
+    if (!el || el.style.display === 'none') { clearInterval(_poll); return; }
+    checkIntake();
+  }, 250);
+}
+
+// ---------- Monitor de integridad: anula el examen si el estudiante cambia de pestaña/ventana ----------
+let integrityMonitorActive = false;
+
+function startIntegrityMonitor(){
+  integrityMonitorActive = true;
+  document.addEventListener('visibilitychange', handleVisibilityChange);
+  window.addEventListener('blur', handleWindowBlur);
+}
+
+function stopIntegrityMonitor(){
+  integrityMonitorActive = false;
+  document.removeEventListener('visibilitychange', handleVisibilityChange);
+  window.removeEventListener('blur', handleWindowBlur);
+}
+
+function handleVisibilityChange(){
+  if(!integrityMonitorActive || state.submitted) return;
+  if(document.hidden){
+    annulExam('Cambiaste de pestaña o minimizaste el navegador durante el examen.');
+  }
+}
+
+function handleWindowBlur(){
+  if(!integrityMonitorActive || state.submitted) return;
+  // Pequeño margen para no disparar en falso por un enfoque interno de la propia página;
+  // se confirma que la ventana realmente perdio el foco antes de anular.
+  setTimeout(function(){
+    if(!integrityMonitorActive || state.submitted) return;
+    if(document.hidden || !document.hasFocus()){
+      annulExam('Saliste de la ventana del examen (cambio de aplicación o pestaña) durante el examen.');
+    }
+  }, 50);
+}
+
+function annulExam(reason){
+  if(state.submitted) return;
+  stopIntegrityMonitor();
+  clearInterval(state.timerInterval);
+  state.submitted = true;
+  state.annulled = true;
+  state.annulReason = reason;
+  saveLockRecord();
+  computeAndRenderResults();
+}
+
+function startExam() {
+  const n = document.getElementById('inp-nombre').value.trim();
+  const c = document.getElementById('inp-codigo').value.trim();
+  const e = document.getElementById('inp-email').value.trim();
+  const f = document.getElementById('inp-fecha').value;
+  const emailOk = e.length > 0 && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e);
+  if (!n||!c||!emailOk||!f||!state.consent) return;
+
+  // Verificación de respaldo: si el correo ya registró una respuesta, no se inicia un examen nuevo.
+  const existingLock = getLockForEmail(e);
+  if (existingLock) { state.lockRecord = existingLock; loadLockedResult(existingLock); return; }
+
+  state.student = { nombre:n, codigo:c, email:e, startTime: formatDateTimeForDisplay(f) };
+  ACTIVE_SECTIONS = shuffle(SECTIONS).map(buildActiveSection);
+  state.answers = ACTIVE_SECTIONS.map(sec => {
+    if (sec.type === 'multiselect') {
+      return Array(sec.questions.length).fill(null).map(() => []);
+    } else {
+      return Array(sec.questions.length).fill(null);
+    }
+  });
+
+  document.getElementById('hd-student').textContent = `${n} · ${c}`;
+  document.getElementById('intake-screen').style.display = 'none';
+  document.getElementById('app-shell').style.display = '';
+  startTimer();
+  startIntegrityMonitor();
+  render();
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initializeIntakeScreen);
+} else {
+  initializeIntakeScreen();
+}
+
+function startTimer() {
+  state.timerInterval = setInterval(()=>{
+    state.seconds--;
+    const m = String(Math.floor(state.seconds/60)).padStart(2,'0');
+    const s = String(state.seconds%60).padStart(2,'0');
+    const el = document.getElementById('timer');
+    if (el) { el.textContent=`${m}:${s}`; if(state.seconds<=300) el.classList.add('text-ios-red','font-black'); }
+    if (state.seconds<=0){ clearInterval(state.timerInterval); confirmSubmit(true); }
+  },1000);
+}
+
+function countAnswered(){
+  let n=0;
+  ACTIVE_SECTIONS.forEach((sec,si)=>{
+    sec.questions.forEach((_,qi)=>{
+      const a=state.answers[si][qi];
+      if(sec.type==='multiselect') { if(a&&a.length>0) n++; }
+      else if(a!==null) n++;
+    });
+  });
+  return n;
+}
+
+function updateProgress(){
+  const ans=countAnswered();
+  document.getElementById('progress-bar').style.width=(ans/TOTAL_QUESTIONS*100)+'%';
+  document.getElementById('prog-pct').textContent=`${ans} / ${TOTAL_QUESTIONS}`;
+  document.getElementById('prog-label').textContent=`Bloque ${state.current+1} de ${ACTIVE_SECTIONS.length}`;
+}
+
+function updateTabs(){
+  ACTIVE_SECTIONS.forEach((sec,i)=>{
+    const tab=document.getElementById(`tab-${i}`);
+    if(!tab) return;
+    tab.textContent = `${sec.icon} ${sec.title.split(' ')[0]}`;
+    tab.className='stab';
+    if(i===state.current){
+      tab.classList.add('active');
+      tab.style.background=CLRS[sec.color].tab;
+      tab.style.borderColor=CLRS[sec.color].tab;
+    } else {
+      tab.style.background=''; tab.style.borderColor='';
+      const a=state.answers[i];
+      const done = sec.type==='multiselect' ? a.some(x=>x&&x.length>0) : a.some(x=>x!==null);
+      if(done) tab.classList.add('done');
+    }
+  });
+}
+
+function render(){ updateTabs(); updateProgress(); updateNavButtons(); renderSection(state.current); }
+
+function updateNavButtons(){
+  const prev=document.getElementById('btn-prev');
+  const next=document.getElementById('btn-next');
+  const sub=document.getElementById('btn-submit');
+  if(prev) prev.disabled=state.current===0;
+  if(next&&sub){
+    if(state.current===ACTIVE_SECTIONS.length-1){ next.style.display='none'; sub.style.display=''; }
+    else { next.style.display=''; sub.style.display='none'; }
+  }
+}
+
+function renderSection(idx, scrollMode){
+  const sec=ACTIVE_SECTIONS[idx];
+  if(!sec) return;
+  const col=CLRS[sec.color];
+  const main=document.getElementById('main-content');
+  const prevScroll = scrollMode === 'keep' ? window.scrollY : null;
+  let h=`<div class="section-in"><div class="card p-5 mb-5"><div class="flex items-start gap-3"><span class="text-3xl">${sec.icon}</span><div><div class="flex items-center gap-2 mb-1 flex-wrap"><h2 class="text-xl font-bold text-gray-900">${sec.title}</h2><span class="text-xs px-2 py-0.5 rounded-full font-semibold ${col.badge}">${sec.type==='multiple'?'Opción múltiple (1 correcta)':sec.type==='multiselect'?'Selección múltiple (2+ correctas)':sec.type==='truefalse'?'Verdadero / Falso':'Completar párrafos'}</span></div><p class="text-xs text-ios-second">${sec.desc}</p></div></div></div>`;
+  if(sec.type==='multiple') h+=renderMultiple(sec,idx,col);
+  else if(sec.type==='multiselect') h+=renderMultiSelect(sec,idx,col);
+  else if(sec.type==='truefalse') h+=renderTrueFalse(sec,idx,col);
+  else h+=renderDragDrop(sec,idx,col);
+  h+=`</div>`;
+  main.innerHTML=h;
+  if (prevScroll !== null) {
+    requestAnimationFrame(() => window.scrollTo({top: prevScroll}));
+  } else if (scrollMode !== false) {
+    window.scrollTo({top:0, behavior:'smooth'});
+  }
+  if(sec.type==='dragdrop') initDragDrop(idx);
+}
+
+function renderMultiple(sec,si,col){
+  let h='<div class="space-y-4">';
+  sec.questions.forEach((q,qi)=>{
+    const ans=state.answers[si][qi]; const sub=state.submitted;
+    h+=`<div class="card p-5"><div class="flex gap-3 mb-4"><span class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 ${col.badge}">${qi+1}</span><p class="text-gray-800 font-medium leading-snug text-sm">${q.text}</p></div><div class="space-y-2">`;
+    q.opts.forEach((opt,oi)=>{
+      let cls='opt p-3 flex items-start gap-3';
+      let circleStyle='width:20px;height:20px;border-radius:99px;border:2px solid #D1D5DB;flex-shrink:0;margin-top:2px';
+      let circleInner='';
+      if(!sub&&ans===oi){ cls+=' sel'; circleStyle='width:20px;height:20px;border-radius:99px;border:2px solid #007AFF;background:#007AFF;flex-shrink:0;margin-top:2px;display:flex;align-items:center;justify-content:center'; circleInner='<span style="width:8px;height:8px;background:#fff;border-radius:99px;display:block"></span>'; }
+      if(sub&&oi===q.correct){ cls+=' ok'; circleStyle='width:20px;height:20px;border-radius:99px;background:#34C759;flex-shrink:0;margin-top:2px;display:flex;align-items:center;justify-content:center'; circleInner='<span style="color:#fff;font-size:11px;font-weight:bold">&#10003;</span>'; }
+      if(sub&&ans===oi&&oi!==q.correct){ cls+=' fail'; circleStyle='width:20px;height:20px;border-radius:99px;background:#FF3B30;flex-shrink:0;margin-top:2px;display:flex;align-items:center;justify-content:center'; circleInner='<span style="color:#fff;font-size:11px;font-weight:bold">&#10007;</span>'; }
+      const icon=`<span class="opt-circle" data-opt-circle="${si}-${qi}-${oi}" style="${circleStyle}">${circleInner}</span>`;
+      h+=`<div class="${cls}" data-opt="${si}-${qi}-${oi}" onclick="${sub?'':'selectSingle('+si+','+qi+','+oi+')'}">${icon}<span class="text-sm text-gray-800">${opt}</span></div>`;
+    });
+    if(sub) h+=`<div class="mt-3 p-3 rounded-xl text-xs leading-relaxed ${ans===q.correct?'bg-green-50 text-green-800':'bg-red-50 text-red-800'}"><span class="font-bold">${ans===q.correct?'&#10003; Correcto':'&#10007; Incorrecto &mdash; la respuesta era: &ldquo;'+q.opts[q.correct]+'&rdquo;'}</span><span class="block mt-1 opacity-80">&#128161; ${q.just}</span></div>`;
+    h+=`</div></div>`;
+  });
+  return h+'</div>';
+}
+
+function selectSingle(si,qi,oi){
+  if(state.submitted) return;
+  state.answers[si][qi]=oi;
+  const q=ACTIVE_SECTIONS[si].questions[qi];
+  q.opts.forEach((_,i)=>{
+    const el=document.querySelector('[data-opt="'+si+'-'+qi+'-'+i+'"]');
+    if(!el) return;
+    const isSel=i===oi;
+    el.className='opt p-3 flex items-start gap-3'+(isSel?' sel':'');
+    const circle=el.querySelector('[data-opt-circle]');
+    if(circle){
+      if(isSel){
+        circle.style.cssText='width:20px;height:20px;border-radius:99px;border:2px solid #007AFF;background:#007AFF;flex-shrink:0;margin-top:2px;display:flex;align-items:center;justify-content:center';
+        circle.innerHTML='<span style="width:8px;height:8px;background:#fff;border-radius:99px;display:block"></span>';
+      } else {
+        circle.style.cssText='width:20px;height:20px;border-radius:99px;border:2px solid #D1D5DB;background:transparent;flex-shrink:0;margin-top:2px';
+        circle.innerHTML='';
+      }
+    }
+  });
+  updateProgress();
+}
+
+function renderMultiSelect(sec,si,col){
+  let h=`<div class="space-y-4"><div class="flex items-center gap-2 px-1"><span class="w-5 h-5 rounded bg-purple-100 flex items-center justify-center text-purple-700 text-xs flex-shrink-0">&#9745;</span><p class="text-xs text-ios-second">Selecciona <strong>todas</strong> las opciones correctas. Solo obtienes el punto si marcas exactamente las correctas.</p></div>`;
+  sec.questions.forEach((q,qi)=>{
+    const sel=state.answers[si][qi]||[]; const sub=state.submitted;
+    const correct=new Set(q.correct);
+    const allOk = sel.length===q.correct.length && q.correct.every(c=>sel.includes(c));
+    h+=`<div class="card p-5"><div class="flex gap-3 mb-4"><span class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 ${col.badge}">${qi+1}</span><p class="text-gray-800 font-medium leading-snug text-sm">${q.text}</p></div><div class="space-y-2">`;
+    q.opts.forEach((opt,oi)=>{
+      const isSelected=sel.includes(oi);
+      const isCorrect=correct.has(oi);
+      let cls='opt p-3 flex items-start gap-3';
+      let boxCls='cb-box mt-0.5';
+      let boxInner='';
+      if(!sub){
+        if(isSelected){ cls+=' sel'; boxCls+=' checked'; boxInner='<svg width="10" height="8" viewBox="0 0 10 8"><path d="M1 4L3.5 6.5L9 1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>'; }
+      } else {
+        if(isSelected&&isCorrect)  { cls+=' ok';     boxCls+=' ok-check';     boxInner='<svg width="10" height="8" viewBox="0 0 10 8"><path d="M1 4L3.5 6.5L9 1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>'; }
+        if(isSelected&&!isCorrect) { cls+=' fail';   boxCls+=' fail-check';   boxInner='<span style="color:white;font-size:10px;font-weight:bold">&#10007;</span>'; }
+        if(!isSelected&&isCorrect) { cls+=' missed'; boxCls+=' missed-check'; boxInner='<span style="color:white;font-size:10px;font-weight:bold">!</span>'; }
+      }
+      h+=`<div class="${cls}" data-mopt="${si}-${qi}-${oi}" onclick="${sub?'':'toggleMulti('+si+','+qi+','+oi+')'}"><span class="opt-cb ${boxCls}" data-cb="${si}-${qi}-${oi}">${boxInner}</span><span class="text-sm text-gray-800">${opt}</span></div>`;
+    });
+    if(sub){
+      h+=`<div class="mt-3 p-3 rounded-xl text-xs leading-relaxed ${allOk?'bg-green-50 text-green-800':'bg-red-50 text-red-800'}"><span class="font-bold">${allOk?'&#10003; Todas las correctas seleccionadas':'&#10007; Selección incorrecta o incompleta'}</span><span class="block mt-1 opacity-80">&#128161; ${q.just}</span></div>`;
+    } else {
+      h+=`<p class="text-xs text-ios-second mt-2 pl-1" data-count="${si}-${qi}">Seleccionadas: ${sel.length} de ${q.correct.length} necesarias</p>`;
+    }
+    h+=`</div></div>`;
+  });
+  return h+'</div>';
+}
+
+function toggleMulti(si,qi,oi){
+  if(state.submitted) return;
+  const arr=state.answers[si][qi]||[];
+  const idx=arr.indexOf(oi);
+  if(idx>=0) arr.splice(idx,1); else arr.push(oi);
+  state.answers[si][qi]=arr;
+  const isSel=arr.includes(oi);
+  const el=document.querySelector('[data-mopt="'+si+'-'+qi+'-'+oi+'"]');
+  if(el){
+    el.className='opt p-3 flex items-start gap-3'+(isSel?' sel':'');
+    const cb=el.querySelector('[data-cb]');
+    if(cb){
+      if(isSel){
+        cb.className='opt-cb cb-box checked mt-0.5';
+        cb.innerHTML='<svg width="10" height="8" viewBox="0 0 10 8"><path d="M1 4L3.5 6.5L9 1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+      } else {
+        cb.className='opt-cb cb-box mt-0.5';
+        cb.innerHTML='';
+      }
+    }
+  }
+  const counter=document.querySelector('[data-count="'+si+'-'+qi+'"]');
+  if(counter){
+    const q=ACTIVE_SECTIONS[si].questions[qi];
+    counter.textContent='Seleccionadas: '+arr.length+' de '+q.correct.length+' necesarias';
+  }
+  updateProgress();
+}
+
+function renderTrueFalse(sec,si,col){
+  let h='<div class="space-y-4">';
+  sec.questions.forEach((q,qi)=>{
+    const ans=state.answers[si][qi]; const sub=state.submitted;
+    let tCls='tf flex-1', fCls='tf flex-1';
+    if(!sub){ if(ans===true) tCls+=' sel-true'; if(ans===false) fCls+=' sel-false'; }
+    else {
+      if(q.correct===true)  tCls+=' ok'; else tCls+=(ans===true?' fail':'');
+      if(q.correct===false) fCls+=' ok'; else fCls+=(ans===false?' fail':'');
+    }
+    h+=`<div class="card p-5"><div class="flex gap-3 mb-4"><span class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 ${col.badge}">${qi+1}</span><p class="text-gray-800 font-medium leading-snug text-sm">${q.text}</p></div><div class="flex gap-3"><div class="${tCls}" data-tf="${si}-${qi}-true" onclick="${sub?'':'selectTF('+si+','+qi+',true)'}">&#10003; Verdadero</div><div class="${fCls}" data-tf="${si}-${qi}-false" onclick="${sub?'':'selectTF('+si+','+qi+',false)'}">&#10007; Falso</div></div>`;
+    if(sub){ const ok=ans===q.correct;
+      h+=`<div class="mt-3 p-3 rounded-xl text-xs leading-relaxed ${ok?'bg-green-50 text-green-800':'bg-red-50 text-red-800'}"><span class="font-bold">${ok?'&#10003; Correcto':'&#10007; La respuesta es '+(q.correct?'Verdadero':'Falso')}</span><span class="block mt-1 opacity-80">&#128161; ${q.just}</span></div>`;
+    }
+    h+=`</div>`;
+  });
+  return h+'</div>';
+}
+
+function selectTF(si,qi,val){
+  if(state.submitted) return;
+  state.answers[si][qi]=val;
+  const trueEl=document.querySelector('[data-tf="'+si+'-'+qi+'-true"]');
+  const falseEl=document.querySelector('[data-tf="'+si+'-'+qi+'-false"]');
+  if(trueEl) trueEl.className='tf flex-1'+(val===true?' sel-true':'');
+  if(falseEl) falseEl.className='tf flex-1'+(val===false?' sel-false':'');
+  updateProgress();
+}
+
+function renderDragDrop(sec,si,col){
+  const used=state.answers[si].filter(a=>a!==null);
+  const hasActive = !!state.selectedChip;
+  let bank=`<div id="word-bank-sticky" class="card p-4 mb-4" style="position:sticky;top:140px;z-index:30;box-shadow:0 4px 20px rgba(0,0,0,.13);transition:box-shadow .2s ease"><div class="flex items-center justify-between mb-2 gap-2"><p class="text-xs font-semibold text-ios-second uppercase tracking-wide">Banco de palabras</p>${hasActive?`<span class="text-xs text-ios-blue font-semibold animate-pulse">Desplazate y toca el espacio en blanco</span>`:`<span class="text-xs text-ios-second">Toca una palabra para seleccionarla</span>`}</div><div class="flex flex-wrap gap-2">`;
+  sec.bankWords.forEach(w=>{
+    const isUsed   = used.includes(w);
+    const isActive = state.selectedChip===w;
+    let cls='chip';
+    if(isUsed)   cls+=' used';
+    if(isActive) cls+=' active';
+    bank+=`<span class="${cls}" onclick="chipClick(this.dataset.word)" data-word="${w}">${w}</span>`;
+  });
+  bank+=`</div></div>`;
+  let qs='<div class="space-y-4">';
+  sec.questions.forEach((q,qi)=>{
+    const placed=state.answers[si][qi]; const sub=state.submitted;
+    let bCls='blank', bTxt=placed||'toca aquí';
+    if(placed) bCls+=' ready';
+    if(sub&&placed){ bCls=placed===q.correct?'blank ok':'blank fail'; }
+    qs+=`<div class="card p-5"><div class="flex gap-3 mb-3"><span class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 ${col.badge}">${qi+1}</span><p class="text-xs font-semibold text-ios-second uppercase tracking-wide mt-1.5">Completa el enunciado</p></div><p class="text-gray-800 text-sm leading-relaxed">${q.before}<span class="${bCls}" id="blank-${si}-${qi}" onclick="blankClick(${si},${qi})">${bTxt}</span>${q.after}</p>`;
+    if(sub&&placed){ const ok=placed===q.correct;
+      qs+=`<div class="mt-3 p-3 rounded-xl text-xs leading-relaxed ${ok?'bg-green-50 text-green-800':'bg-red-50 text-red-800'}"><span class="font-bold">${ok?'&#10003; Correcto':'&#10007; La palabra correcta es: '+q.correct}</span><span class="block mt-1 opacity-80">&#128161; ${q.just}</span></div>`;
+    }
+    qs+=`</div>`;
+  });
+  return bank+qs+'</div>';
+}
+
+function chipClick(w){
+  if(state.submitted) return;
+  const used=state.answers[state.current].filter(a=>a!==null);
+  if(used.includes(w)&&state.selectedChip!==w) return;
+  state.selectedChip=state.selectedChip===w?null:w;
+  renderSection(state.current,'keep');
+}
+
+function blankClick(si,qi){
+  if(state.submitted||!state.selectedChip) return;
+  state.answers[si][qi]=state.selectedChip;
+  const blank=document.getElementById(`blank-${si}-${qi}`);
+  if(blank){
+    blank.textContent=state.selectedChip;
+    blank.classList.add('ready');
+  }
+  state.selectedChip=null;
+  updateProgress();
+  renderSection(state.current,'keep');
+}
+
+function initDragDrop(idx){}
+
+function goSection(idx){ if(idx<0||idx>=ACTIVE_SECTIONS.length) return; state.current=idx; state.selectedChip=null; render(); }
+function prevSection(){ if(state.current>0){ state.current--; state.selectedChip=null; render(); } }
+function nextSection(){ if(state.current<ACTIVE_SECTIONS.length-1){ state.current++; state.selectedChip=null; render(); } }
+
+function confirmSubmit(auto=false){
+  if(!auto){
+    showConfirmModal('¿Deseas entregar la actividad?', 'No podrás volver atrás. Las preguntas sin responder quedarán en blanco.', function(){
+      doSubmit();
+    });
+    return;
+  }
+  doSubmit();
+}
+
+function showConfirmModal(title, message, onConfirm){
+  // Eliminar modal previo si existe
+  var prev = document.getElementById('confirm-modal');
+  if(prev) prev.remove();
+
+  var modal = document.createElement('div');
+  modal.id = 'confirm-modal';
+  modal.style.cssText = 'position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.45);display:flex;align-items:center;justify-content:center;padding:24px;backdrop-filter:blur(4px)';
+  modal.innerHTML = '<div style="background:#fff;border-radius:20px;padding:28px 24px;max-width:340px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.25);text-align:center">' +
+    '<div style="font-size:2rem;margin-bottom:12px">📋</div>' +
+    '<p style="font-weight:700;font-size:1rem;color:#1a1a1a;margin:0 0 8px">' + title + '</p>' +
+    '<p style="font-size:.85rem;color:#6C6C70;line-height:1.5;margin:0 0 24px">' + message + '</p>' +
+    '<div style="display:flex;gap:10px">' +
+      '<button id="modal-cancel" style="flex:1;padding:13px;border-radius:13px;border:2px solid #E5E5EA;background:#fff;font-weight:600;font-size:.9rem;color:#6C6C70;cursor:pointer">Cancelar</button>' +
+      '<button id="modal-confirm" style="flex:1;padding:13px;border-radius:13px;border:none;background:#34C759;color:#fff;font-weight:700;font-size:.9rem;cursor:pointer;box-shadow:0 4px 14px rgba(52,199,89,.35)">Entregar</button>' +
+    '</div></div>';
+
+  document.body.appendChild(modal);
+
+  document.getElementById('modal-cancel').onclick = function(){
+    modal.remove();
+  };
+  document.getElementById('modal-confirm').onclick = function(){
+    modal.remove();
+    onConfirm();
+  };
+  // Cerrar al tocar el fondo
+  modal.addEventListener('click', function(e){
+    if(e.target === modal) modal.remove();
+  });
+}
+
+function doSubmit(){
+  stopIntegrityMonitor();
+  clearInterval(state.timerInterval);
+  state.submitted=true;
+  saveLockRecord();
+  computeAndRenderResults();
+}
+
+function saveLockRecord(){
+  const email = state.student && state.student.email;
+  const key = normalizeEmail(email);
+  if(!key) return;
+  const tsIso = new Date().toISOString();
+  const code = generateSubmissionCode(email, tsIso);
+  state.veriCode = code;
+  const record = {
+    student: state.student,
+    activeSections: ACTIVE_SECTIONS,
+    answers: state.answers,
+    code: code,
+    annulled: !!state.annulled,
+    annulReason: state.annulReason || null,
+    submittedAtIso: tsIso,
+    submittedAtDisplay: new Date().toLocaleString('es-BO', {dateStyle:'long', timeStyle:'short'})
+  };
+  const locks = getLocks();
+  locks[key] = record;
+  saveLocks(locks);
+}
+
+function computeAndRenderResults(){
+  const rawCorrect = ACTIVE_SECTIONS.reduce((sum, sec, si) => {
+    return sum + sec.questions.filter((q, qi) => {
+      const ans = state.answers[si][qi];
+      if (sec.type === 'multiselect') {
+        const ansSet = new Set(ans);
+        const corrSet = new Set(q.correct);
+        return ansSet.size === corrSet.size && [...corrSet].every(c => ansSet.has(c));
+      } else if (sec.type === 'truefalse' || sec.type === 'multiple' || sec.type === 'dragdrop') {
+        return ans === q.correct;
+      }
+      return false;
+    }).length;
+  }, 0);
+
+  const total = ACTIVE_SECTIONS.reduce((sum, s) => sum + s.questions.length, 0);
+  const correct = state.annulled ? 0 : rawCorrect;
+  const pct = state.annulled ? 0 : Math.round((correct / total) * 100);
+
+  const annulBanner = document.getElementById('annul-banner');
+  if(annulBanner){
+    if(state.annulled){
+      annulBanner.style.display = '';
+      annulBanner.innerHTML = '<p class="font-bold text-red-800 text-sm mb-1 flex items-center gap-1.5"><span class="text-lg">&#9888;&#65039;</span> Examen anulado</p><p class="text-xs text-red-700 leading-relaxed">' + (state.annulReason || 'Se detectó un cambio de pantalla durante el examen.') + ' Según la política del examen, esto anula la evaluación y tu nota queda registrada como 0. Esta decisión es definitiva y no se puede repetir el examen.</p>';
+    } else {
+      annulBanner.style.display = 'none';
+      annulBanner.innerHTML = '';
+    }
+  }
+
+  const ring = document.getElementById('score-ring');
+  if(ring){ ring.style.borderColor = state.annulled ? '#FF3B30' : (pct>=80?'#34C759':pct>=60?'#FF9500':'#FF3B30'); }
+  document.getElementById('score-num').textContent = correct;
+  document.getElementById('score-label').textContent = state.annulled ? 'ANULADO — 0%' : (pct + '% — ' + (pct>=80?'Excelente':pct>=60?'Bueno':pct>=40?'Regular':'Necesita refuerzo'));
+  document.getElementById('score-sub').textContent = state.annulled ? ('Examen anulado por cambio de pantalla') : (correct + ' de ' + total + ' respuestas correctas');
+  document.getElementById('res-nombre').textContent = state.student.nombre;
+  document.getElementById('res-codigo').textContent = state.student.codigo;
+  document.getElementById('res-grade').textContent = state.annulled ? 'Anulado (0%)' : (pct + '% (' + (pct>=80?'Avanzado':pct>=60?'Intermedio':pct>=40?'Básico':'Inicial') + ')');
+  const veriEl = document.getElementById('res-veriCode');
+  if(veriEl) veriEl.textContent = state.veriCode || '--';
+
+  let breakdown = '';
+  ACTIVE_SECTIONS.forEach((sec, si) => {
+    const sectionCorrect = sec.questions.filter((q, qi) => {
+      const ans = state.answers[si][qi];
+      if (sec.type === 'multiselect') {
+        const ansSet = new Set(ans);
+        const corrSet = new Set(q.correct);
+        return ansSet.size === corrSet.size && [...corrSet].every(c => ansSet.has(c));
+      } else if (sec.type === 'truefalse' || sec.type === 'multiple' || sec.type === 'dragdrop') {
+        return ans === q.correct;
+      }
+    }).length;
+    const pctSec = Math.round((sectionCorrect / sec.questions.length) * 100);
+    breakdown += '<div class="p-3 rounded-lg bg-gray-50 flex justify-between items-center"><span><strong>' + sec.icon + ' ' + sec.title + '</strong><br><span class="text-xs text-ios-second">' + sectionCorrect + '/' + sec.questions.length + ' correctas</span></span><span class="text-lg font-bold ' + (pctSec>=75?'text-green-600':pctSec>=50?'text-orange-600':'text-red-600') + '">' + pctSec + '%</span></div>';
+  });
+  if(state.annulled){
+    breakdown = '<p class="text-xs text-ios-second">El desglose por bloque no aplica: la nota final es 0 por anulación. El detalle completo de lo respondido antes de la anulación queda disponible en el PDF, para fines de revisión.</p>';
+  }
+  document.getElementById('breakdown').innerHTML = breakdown;
+
+  const insights = generateInsights(ACTIVE_SECTIONS, state.answers);
+  let insightsHtml = '';
+  insights.forEach((insight) => {
+    insightsHtml += '<div class="insight-card ' + insight.level + '"><div class="ic-title">' + insight.topic + '</div><div class="ic-text">' + insight.recommendation + '</div></div>';
+  });
+  document.getElementById('insights-container').innerHTML = state.annulled ? '' : (insightsHtml || '<p class="text-ios-second text-xs">Análisis en progreso...</p>');
+
+  document.getElementById('app-shell').style.display = 'none';
+  document.getElementById('results-overlay').style.display = '';
+  window.scrollTo({top:0});
+}
+
+function generateInsights(sections, answers) {
+  const insights = [];
+  const scoreBySection = sections.map((sec, si) => {
+    const correct = sec.questions.filter((q, qi) => {
+      const ans = answers[si][qi];
+      if (sec.type === 'multiselect') {
+        const ansSet = new Set(ans);
+        const corrSet = new Set(q.correct);
+        return ansSet.size === corrSet.size && [...corrSet].every(c => ansSet.has(c));
+      } else {
+        return ans === q.correct;
+      }
+    }).length;
+    return { section: sec.title, icon: sec.icon, score: (correct / sec.questions.length) * 100 };
+  });
+
+  scoreBySection.sort((a, b) => a.score - b.score);
+  scoreBySection.slice(0, 2).forEach(item => {
+    insights.push({ level: 'high', topic: item.icon + ' ' + item.section, recommendation: 'Area de refuerzo prioritario. Revisar el material del bloque correspondiente y practicar con ejercicios adicionales antes de continuar con el curso.' });
+  });
+  scoreBySection.slice(2, 4).forEach(item => {
+    insights.push({ level: 'medium', topic: item.icon + ' ' + item.section, recommendation: 'Area de mejora. Se recomienda revisar los conceptos clave y reforzar con la bibliografía del curso.' });
+  });
+  scoreBySection.slice(4).forEach(item => {
+    insights.push({ level: 'low', topic: item.icon + ' ' + item.section, recommendation: 'Buen dominio de este tema. Mantener el nivel y profundizar con los casos prácticos del bloque.' });
+  });
+  return insights;
+}
+
+function buildDetailedFeedbackHTML() {
+  let html = '<div style="margin-top:40px;border-top:3px solid #007AFF;padding-top:30px">';
+  html += '<h2 style="font-size:20px;font-weight:700;color:#007AFF;margin-bottom:6px">Retroalimentación Detallada por Pregunta</h2>';
+  html += '<p style="font-size:12px;color:#666;margin-bottom:24px">Para cada pregunta: tu respuesta, la respuesta correcta y la justificación de todas las opciones.</p>';
+
+  ACTIVE_SECTIONS.forEach((sec, si) => {
+    html += '<div style="margin-bottom:28px">';
+    html += '<div style="background:#007AFF;color:#fff;padding:10px 16px;border-radius:10px;font-weight:700;font-size:14px;margin-bottom:14px">' + sec.icon + ' ' + sec.title + '</div>';
+
+    sec.questions.forEach((q, qi) => {
+      const ans = state.answers[si][qi];
+      let isCorrect = false;
+      if (sec.type === 'multiselect') {
+        const ansSet = new Set(ans);
+        const corrSet = new Set(q.correct);
+        isCorrect = ansSet.size === corrSet.size && [...corrSet].every(c => ansSet.has(c));
+      } else {
+        isCorrect = ans === q.correct;
+      }
+
+      const bc = isCorrect ? '#34C759' : '#FF3B30';
+      const bg = isCorrect ? '#F0FFF4' : '#FFF5F5';
+      html += '<div style="border:1px solid #e5e5ea;border-left:5px solid ' + bc + ';border-radius:10px;padding:14px;margin-bottom:12px;background:' + bg + ';page-break-inside:avoid">';
+      html += '<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">';
+      html += '<span style="background:#007AFF;color:#fff;width:24px;height:24px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:bold;flex-shrink:0">' + (qi+1) + '</span>';
+      html += '<span style="font-weight:700;font-size:12px;color:' + (isCorrect?'#1A7A34':'#C0392B') + '">' + (isCorrect?'CORRECTA':'INCORRECTA') + '</span>';
+      html += '</div>';
+
+      if (sec.type === 'dragdrop') {
+        html += '<p style="font-size:12px;color:#333;margin-bottom:10px;line-height:1.6"><strong>Enunciado:</strong> ' + q.before + '[___]' + q.after + '</p>';
+      } else {
+        html += '<p style="font-size:12px;color:#333;margin-bottom:10px;line-height:1.6;font-weight:600">' + q.text + '</p>';
+      }
+
+      html += '<div style="margin-bottom:10px">';
+      if (sec.type === 'multiple') {
+        q.opts.forEach((opt, oi) => {
+          const isMine = ans === oi, isRight = oi === q.correct;
+          let ob='#f5f5f5',obb='#ddd',olc='#888',ol='';
+          if(isMine&&isRight){ob='#E8F8EE';obb='#34C759';olc='#1A7A34';ol='Tu respuesta — CORRECTA';}
+          else if(isMine&&!isRight){ob='#FFF0EE';obb='#FF3B30';olc='#C0392B';ol='Tu respuesta — INCORRECTA';}
+          else if(!isMine&&isRight){ob='#FFF5E6';obb='#FF9500';olc='#c07000';ol='Respuesta correcta (no seleccionada)';}
+          html += '<div style="background:'+ob+';border:1px solid '+obb+';border-radius:6px;padding:7px 10px;margin-bottom:5px">';
+          if(ol) html += '<div style="font-size:10px;font-weight:700;color:'+olc+';margin-bottom:2px">'+ol+'</div>';
+          html += '<div style="font-size:11px;color:#333">'+opt+'</div></div>';
+        });
+      } else if (sec.type === 'multiselect') {
+        const cs = new Set(q.correct);
+        q.opts.forEach((opt, oi) => {
+          const isSel=(ans||[]).includes(oi), isRight=cs.has(oi);
+          let ob='#f9f9f9',obb='#e5e5ea',olc='#aaa',ol='';
+          if(isSel&&isRight){ob='#E8F8EE';obb='#34C759';olc='#1A7A34';ol='Seleccionada — CORRECTA';}
+          if(isSel&&!isRight){ob='#FFF0EE';obb='#FF3B30';olc='#C0392B';ol='Seleccionada — INCORRECTA (no debía marcarse)';}
+          if(!isSel&&isRight){ob='#FFF5E6';obb='#FF9500';olc='#c07000';ol='No seleccionada — DEBÍA MARCARSE';}
+          if(!isSel&&!isRight){ol='No seleccionada — correcto omitirla';}
+          html += '<div style="background:'+ob+';border:1px solid '+obb+';border-radius:6px;padding:7px 10px;margin-bottom:5px">';
+          if(ol) html += '<div style="font-size:10px;font-weight:700;color:'+olc+';margin-bottom:2px">'+ol+'</div>';
+          html += '<div style="font-size:11px;color:#333">'+opt+'</div></div>';
+        });
+      } else if (sec.type === 'truefalse') {
+        [{val:true,lbl:'Verdadero'},{val:false,lbl:'Falso'}].forEach(ch => {
+          const isMine=ans===ch.val, isRight=q.correct===ch.val;
+          let ob='#f5f5f5',obb='#ddd',olc='#888',ol='';
+          if(isMine&&isRight){ob='#E8F8EE';obb='#34C759';olc='#1A7A34';ol='Tu respuesta — CORRECTA';}
+          else if(isMine&&!isRight){ob='#FFF0EE';obb='#FF3B30';olc='#C0392B';ol='Tu respuesta — INCORRECTA';}
+          else if(!isMine&&isRight){ob='#FFF5E6';obb='#FF9500';olc='#c07000';ol='Respuesta correcta';}
+          html += '<div style="background:'+ob+';border:1px solid '+obb+';border-radius:6px;padding:7px 10px;margin-bottom:5px">';
+          if(ol) html += '<div style="font-size:10px;font-weight:700;color:'+olc+';margin-bottom:2px">'+ol+'</div>';
+          html += '<div style="font-size:11px;color:#333">'+ch.lbl+'</div></div>';
+        });
+      } else if (sec.type === 'dragdrop') {
+        const sa=ans||'(sin respuesta)', ok=ans===q.correct;
+        html += '<div style="background:'+(ok?'#E8F8EE':'#FFF0EE')+';border:1px solid '+(ok?'#34C759':'#FF3B30')+';border-radius:6px;padding:7px 10px;margin-bottom:5px">';
+        html += '<div style="font-size:10px;font-weight:700;color:'+(ok?'#1A7A34':'#C0392B')+';margin-bottom:2px">'+(ok?'Tu respuesta — CORRECTA':'Tu respuesta — INCORRECTA')+'</div>';
+        html += '<div style="font-size:11px;color:#333">Respondiste: <strong>'+sa+'</strong></div></div>';
+        if(!ok){
+          html += '<div style="background:#FFF5E6;border:1px solid #FF9500;border-radius:6px;padding:7px 10px;margin-bottom:5px">';
+          html += '<div style="font-size:10px;font-weight:700;color:#c07000;margin-bottom:2px">Respuesta correcta</div>';
+          html += '<div style="font-size:11px;color:#333"><strong>'+q.correct+'</strong></div></div>';
+        }
+      }
+      html += '</div>';
+      html += '<div style="background:#F0F4FF;border-left:4px solid #007AFF;border-radius:0 8px 8px 0;padding:10px 12px;font-size:11px;color:#333;line-height:1.7">';
+      html += '<strong style="color:#007AFF">Retroalimentación:</strong> ' + q.just;
+      html += '</div>';
+      html += '</div>';
+    });
+    html += '</div>';
+  });
+  html += '</div>';
+  return html;
+}
+
+function downloadPDF() {
+  const correctBySection = ACTIVE_SECTIONS.map((sec, si) => {
+    const c = sec.questions.filter((q, qi) => {
+      const ans = state.answers[si][qi];
+      if (sec.type === 'multiselect') {
+        const ansSet = new Set(ans); const corrSet = new Set(q.correct);
+        return ansSet.size === corrSet.size && [...corrSet].every(c => ansSet.has(c));
+      } else { return ans === q.correct; }
+    }).length;
+    return Math.round((c / sec.questions.length) * 100);
+  });
+
+  const scoreNum = document.getElementById('score-num').textContent;
+  const scoreLabel = document.getElementById('score-label').textContent;
+  const insightsData = generateInsights(ACTIVE_SECTIONS, state.answers);
+
+  let html = '<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><title>Retroalimentación Examen Final - Ingeniería de Software I - '+(state.veriCode||'')+'</title>';
+  html += '<style>*{box-sizing:border-box}body{font-family:Arial,sans-serif;padding:24px;background:#f5f5f5;color:#333;margin:0}';
+  html += '.w{max-width:920px;margin:0 auto;background:#fff;border-radius:12px;padding:28px;box-shadow:0 2px 10px rgba(0,0,0,.1)}';
+  html += '.hd{text-align:center;margin-bottom:24px;border-bottom:3px solid #007AFF;padding-bottom:18px}';
+  html += '.hd h1{margin:0 0 6px;color:#1a1a1a;font-size:24px}.hd .sub{color:#007AFF;font-size:15px;font-weight:700}.hd .auth{color:#666;font-size:12px;margin-top:4px}';
+  html += '.vc{text-align:center;margin:0 0 18px;padding:10px;background:#FFF5E6;border:2px dashed #FF9500;border-radius:10px;font-size:13px;color:#8a5300}';
+  html += '.ig{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:18px 0}';
+  html += '.ib{padding:11px 14px;background:#f9f9fb;border-radius:8px;border-left:3px solid #007AFF}';
+  html += '.ib b{color:#007AFF;display:block;font-size:10px;text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px}';
+  html += '.ib span{font-size:13px;font-weight:600;color:#1a1a1a}';
+  html += '.sc{text-align:center;margin:22px 0;padding:22px;background:linear-gradient(135deg,#007AFF,#005ACC);border-radius:14px;color:#fff}';
+  html += '.sn{font-size:50px;font-weight:900;margin:6px 0;line-height:1}.sl{font-size:14px;font-weight:600;opacity:.9}';
+  html += '.st{font-size:16px;font-weight:700;color:#333;margin:22px 0 10px;padding-bottom:5px;border-bottom:2px solid #E5E5EA}';
+  html += '.cb{display:grid;grid-template-columns:repeat(6,1fr);gap:7px;margin:14px 0}';
+  html += '.bi{display:flex;flex-direction:column;align-items:center}';
+  html += '.ba{width:100%;height:90px;background:#E5E5EA;border-radius:5px 5px 0 0;position:relative}';
+  html += '.bf{background:linear-gradient(180deg,#007AFF,#004D99);width:100%;border-radius:5px 5px 0 0;position:absolute;bottom:0;left:0}';
+  html += '.bp{position:absolute;bottom:5px;width:100%;text-align:center;color:#1a1a1a;font-weight:700;font-size:10px}';
+  html += '.bl{font-size:9px;margin-top:5px;text-align:center;line-height:1.3;color:#333}';
+  html += '.ig2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:10px 0}';
+  html += '.ins{padding:10px;border-left:4px solid;border-radius:5px}';
+  html += '.ins.high{border-color:#FF3B30;background:#FFF0EE}.ins.medium{border-color:#FF9500;background:#FFF5E6}.ins.low{border-color:#34C759;background:#E8F8EE}';
+  html += '.it{font-weight:700;font-size:11px;margin-bottom:3px}';
+  html += '.ins.high .it{color:#C0392B}.ins.medium .it{color:#C67000}.ins.low .it{color:#1A7A34}';
+  html += '.ix{font-size:10px;line-height:1.4}';
+  html += '.ins.high .ix{color:#6D2826}.ins.medium .ix{color:#6B3F00}.ins.low .ix{color:#0D5722}';
+  html += '.ft{text-align:center;margin-top:24px;padding-top:16px;border-top:1px solid #E5E5EA;font-size:11px;color:#888}';
+  html += '.va{margin:0 0 18px;padding:14px;background:#FFF0EE;border:2px solid #FF3B30;border-radius:10px;color:#8a1f1f}';
+  html += '.va b{display:block;font-size:14px;margin-bottom:4px}.va span{font-size:12px;line-height:1.5}';
+  html += '@media print{body{background:#fff;padding:8px}.w{box-shadow:none;padding:16px}}</style>';
+  html += '</head><body onload="setTimeout(function(){window.print();},800);"><div class="w">';
+  html += '<div class="hd"><img src="'+LOGO_DATA_URI+'" alt="Logo UPDS" style="width:56px;height:56px;object-fit:contain;margin:0 auto 10px;display:block"/><h1>Retroalimentación &mdash; Examen Final</h1><div class="sub">Ingeniería de Software I (SIS-0325) &middot; UPDS 2026</div><div class="auth">Docente: Ing. M.Sc. Jimmy Nataniel Requena Llorentty · Ingeniería de Sistemas</div></div>';
+  if(state.annulled){
+    html += '<div class="va"><b>&#9888;&#65039; EXAMEN ANULADO</b><span>'+(state.annulReason||'Se detectó un cambio de pantalla durante el examen.')+' La nota final registrada es 0. El detalle de las respuestas se incluye a continuación únicamente para fines de revisión.</span></div>';
+  }
+  html += '<div class="vc">Código de verificación: <strong>'+(state.veriCode||'SIN-CODIGO')+'</strong> &mdash; sube este PDF, tal cual, a Moodle. Un PDF sin este código no será calificado.</div>';
+  html += '<div class="ig"><div class="ib"><b>Estudiante</b><span>'+state.student.nombre+'</span></div>';
+  html += '<div class="ib"><b>Código</b><span>'+state.student.codigo+'</span></div>';
+  html += '<div class="ib"><b>Correo</b><span>'+state.student.email+'</span></div>';
+  html += '<div class="ib"><b>Fecha</b><span>'+new Date().toLocaleString('es-BO',{dateStyle:'long',timeStyle:'short'})+'</span></div></div>';
+  const pctNum = Math.round((parseInt(scoreNum) / TOTAL_QUESTIONS) * 100);
+  const nivelNum = pctNum>=80?'Avanzado':pctNum>=60?'Intermedio':pctNum>=40?'Básico':'Inicial';
+  const calidadNum = (scoreLabel.split('—')[1] || '').trim();
+  html += '<div class="sc" style="'+(state.annulled?'background:linear-gradient(135deg,#FF3B30,#B71C1C)':'')+'"><div class="sl">'+(state.annulled?'Examen Anulado':'Resultado del Examen Final')+'</div><div class="sn">'+pctNum+'%</div><div class="sl" style="font-size:13px;margin-top:4px">'+(state.annulled?'0 de '+TOTAL_QUESTIONS+' preguntas contabilizadas (anulado)':scoreNum+' de '+TOTAL_QUESTIONS+' preguntas correctas')+'</div><div class="sl" style="font-size:15px;margin-top:5px">'+(state.annulled?'Nota final: 0':(calidadNum+' &middot; Nivel de dominio: '+nivelNum))+'</div></div>';
+  if(!state.annulled){
+  html += '<div class="st">Desempeno por Bloque</div><div class="cb">';
+  correctBySection.forEach((pct, i) => {
+    const h = Math.max(pct, 3);
+    html += '<div class="bi"><div class="ba"><div class="bf" style="height:'+h+'%"></div><span class="bp">'+pct+'%</span></div>';
+    html += '<div class="bl">'+ACTIVE_SECTIONS[i].icon+'<br>'+ACTIVE_SECTIONS[i].title.split(' ').slice(0,2).join(' ')+'</div></div>';
+  });
+  html += '</div>';
+  }
+  html += '<div class="st">Análisis de Resultados</div><div class="ig2">';
+  insightsData.forEach(ins => {
+    html += '<div class="ins '+ins.level+'"><div class="it">'+ins.topic+'</div><div class="ix">'+ins.recommendation+'</div></div>';
+  });
+  html += '</div>';
+  html += buildDetailedFeedbackHTML();
+  html += '<div class="ft"><p>Documento generado automáticamente al entregar la evaluación. Código de verificación: '+(state.veriCode||'SIN-CODIGO')+'</p>';
+  html += '<p>Docente: Ing. M.Sc. Jimmy Nataniel Requena Llorentty · Ingeniería de Sistemas &mdash; Ingeniería de Software I (SIS-0325) &mdash; UPDS 2026</p></div>';
+  html += '</div></body></html>';
+
+  const blob = new Blob([html], {type:'text/html;charset=utf-8'});
+  const link = document.createElement('a');
+  link.href = URL.createObjectURL(blob);
+  link.download = 'Retroalimentacion-Final-IngSoftwareI-SIS0325-' + state.student.codigo + '-' + (state.veriCode||'') + '.html';
+  link.click();
+}
+</script>
+
+</body>
+</html>
